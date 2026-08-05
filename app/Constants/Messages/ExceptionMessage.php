@@ -12,5 +12,7 @@ final class ExceptionMessage
 
     public const RESOURCE_NOT_FOUND = 'Resource not found';
 
+    public const METHOD_NOT_ALLOWED = 'Method not allowed';
+
     public const UNEXPECTED_SERVER_ERROR = 'Unexpected server error';
 }
