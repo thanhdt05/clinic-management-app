@@ -51,4 +51,9 @@ class User extends Authenticatable
     {
         return $this->role()->whereHas('permissions', fn ($query) => $query->where('permissions.name', $permission))->exists();
     }
+
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
 }
