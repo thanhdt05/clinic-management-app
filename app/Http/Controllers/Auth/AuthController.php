@@ -3,46 +3,38 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Resources\User\UserResource;
 use App\Models\User;
+use App\Traits\HttpResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    use HttpResponse;
+
+    public function login(LoginRequest $request)
     {
-        $validate = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ]);
+        $validate = $request->validated();
 
         $user = User::where('email', $validate['email'])->first();
 
         if (!$user || !Hash::check($validate['password'], $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid credentials',
-            ], 401);
+            return $this->error([], 'Sai tên đăng nhập hoặc mật khẩu.', 401);
         }
 
         if (!$user->is_active) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Account is inactive',
-            ], 401);
+            return $this->error([], 'Tài khoản không hoạt động.', 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Login successful',
-            'data' => [
-                'user' => $user,
-                'token' => $token,
-            ],
-        ]);
+        return $this->success([
+            'user' => UserResource::make($user),
+            'token' => $token,
+        ], 'Đăng nhập thành công.');
     }
 
     public function logout(Request $request)
@@ -53,30 +45,16 @@ class AuthController extends Controller
             $token->delete();
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Logout successful',
-        ]);
+        return $this->success([], 'Đăng xuất thành công.');
     }
 
     public function me(Request $request)
     {
         $user = $request->user()->load('role.permissions');
 
-        return response()->json([
-            'success' => true,
-            'message' => 'User data',
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => [
-                    'id' => $user->role->id,
-                    'name' => $user->role->name,
-                    'display_name' => $user->role->display_name,
-                ],
-                'permissions' => $user->role->permissions->pluck('name')->values(),
-            ],
-        ]);
+        return $this->success(
+            ['user' => UserResource::make($user)],
+            'Lấy thông tin người dùng thành công.'
+        );
     }
 }
