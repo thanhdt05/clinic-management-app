@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,5 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::patch('users/{user}/status', [UserController::class, 'updateStatus'])
             ->name('users.updateStatus');
+
+        Route::apiResource('specialties', SpecialtyController::class);
     });
 });
