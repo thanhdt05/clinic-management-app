@@ -1,58 +1,96 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Clinic Management REST API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Hệ thống quản lý phòng khám phát triển trên nền tảng Laravel + Docker Compose + PostgreSQL 16.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Phiên bản Môi trường & Hệ thống
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Docker Engine:** `29.7.0`
+- **Docker Compose:** `5.3.1` (Docker Compose Plugin v2)
+- **PHP Version (Container):** `8.4-cli`
+- **Laravel Framework:** `13.x`
+- **Database:** PostgreSQL `16`
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Giải thích các biến môi trường (.env)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **`DB_CONNECTION=pgsql`**: Sử dụng hệ quản trị cơ sở dữ liệu PostgreSQL.
+- **`DB_HOST=db`**: Tên host kết nối DB trong mạng Docker Compose (service `db`).
+- **`DB_PORT=5432`**: Cổng kết nối PostgreSQL mặc định.
+- **`DB_DATABASE=clinic_app`**: Tên cơ sở dữ liệu của ứng dụng.
+- **`DB_USERNAME=clinic`**: Tên tài khoản kết nối DB.
+- **`DB_PASSWORD=secret`**: Mật khẩu kết nối DB.
+- **`EXAMINATION_FEE=100000`**: Phí khám bệnh mặc định (VND).
+- **`PAYPAL_MODE=sandbox`**: Chế độ thử nghiệm (sandbox) của PayPal API.
+- **`PAYPAL_CLIENT_ID=your-sandbox-client-id`**: Client ID tích hợp PayPal REST API (Sandbox).
+- **`PAYPAL_CLIENT_SECRET=your-sandbox-client-secret`**: Client Secret tích hợp PayPal REST API (Sandbox).
+- **`PAYPAL_CURRENCY=USD`**: Đơn vị tiền tệ mặc định giao dịch qua PayPal.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Kiến trúc Hệ thống
 
-## Agentic Development
+Ứng dụng tuân theo mô hình **Controller + Service** nhằm đảm bảo Controller tinh gọn (Lean Controller), xử lý nghiệp vụ tập trung tại tầng Service và phân tách trách nhiệm rõ ràng.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### Luồng xử lý Request / Response
 
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```text
+CLIENT
+  │
+  ▼
+ROUTE (routes/api.php)
+  │
+  ▼
+MIDDLEWARE (auth:sanctum, EnsurePermission)
+  │
+  ▼
+FORM REQUEST (Validation & Authorization)
+  │
+  ▼
+CONTROLLER (Điều hướng & gọi Service)
+  │
+  ▼
+SERVICE (Xử lý nghiệp vụ chính / DB Transaction)
+  │
+  ▼
+MODEL / ELOQUENT (Tương tác với PostgreSQL)
+  │
+  ▼
+API RESOURCE (Format cấu trúc dữ liệu JSON)
+  │
+  ▼
+JSON RESPONSE (Envelope: success, message, data / errors)
+  │
+  ▼
+CLIENT
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Hướng dẫn Chạy Ứng dụng với Docker
 
-## Code of Conduct
+### 1. Khởi tạo môi trường
+Sao chép file cấu hình môi trường từ mẫu `.env.example`:
+```bash
+cp .env.example .env
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 2. Khởi chạy các container
+Build image và khởi chạy các dịch vụ (`app` & `db` PostgreSQL 16):
+```bash
+docker compose up -d --build
+```
 
-## Security Vulnerabilities
+### 3. Khởi tạo Key & Chạy Migration / Seed
+Chạy lệnh tạo app key và khởi tạo cơ sở dữ liệu bên trong container `app`:
+```bash
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate --seed
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 4. Truy cập Ứng dụng
+Tất cả các API được phục vụ tại:
+`http://localhost:8000/api`
