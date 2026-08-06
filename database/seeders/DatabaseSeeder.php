@@ -21,7 +21,10 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             RolePermissionSeeder::class,
             UserSeeder::class,
+            SpecialtySeeder::class,
+            DoctorSeeder::class,
             PatientSeeder::class,
+            AppointmentSeeder::class,
         ]);
     }
 }
