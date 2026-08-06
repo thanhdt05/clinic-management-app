@@ -30,15 +30,15 @@ class UpdateUserStatusRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'is_active.required' => 'Trạng thái không được để trống.',
-            'is_active.boolean' => 'Trạng thái không hợp lệ.',
+            'is_active.required' => 'The active status field is required.',
+            'is_active.boolean' => 'The active status field must be true or false.',
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'is_active' => 'Trạng thái',
+            'is_active' => 'Active Status',
         ];
     }
 }

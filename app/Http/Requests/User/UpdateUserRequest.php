@@ -42,27 +42,27 @@ class UpdateUserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.string' => 'Tên không hợp lệ.',
-            'name.max' => 'Tên không được vượt quá 255 ký tự.',
+            'name.string' => 'The name field must be a string.',
+            'name.max' => 'The name field must not exceed 255 characters.',
 
-            'email.email' => 'Email không hợp lệ.',
-            'email.max' => 'Email không được vượt quá 255 ký tự.',
+            'email.email' => 'The email field must be a valid email address.',
+            'email.max' => 'The email field must not exceed 255 characters.',
 
-            'password.min' => 'Password phải có ít nhất 8 ký tự.',
-            'password.max' => 'Password không được vượt quá 255 ký tự.',
+            'password.min' => 'The password field must be at least 8 characters.',
+            'password.max' => 'The password field must not exceed 255 characters.',
 
-            'role_id.integer' => 'Vai trò không hợp lệ.',
-            'role_id.exists' => 'Vai trò không tồn tại.',
+            'role_id.integer' => 'The selected role is invalid.',
+            'role_id.exists' => 'The selected role does not exist.',
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'name' => 'Tên',
+            'name' => 'Name',
             'email' => 'Email',
             'password' => 'Password',
-            'role_id' => 'Vai trò',
+            'role_id' => 'Role',
         ];
     }
 }
