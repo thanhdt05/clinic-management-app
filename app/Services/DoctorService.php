@@ -50,7 +50,7 @@ class DoctorService
 
         if ($user->role?->name !== 'DOCTOR') {
             throw ValidationException::withMessages([
-                'user_id' => 'User không phải là bác sĩ',
+                'user_id' => 'The selected user does not have the Doctor role.',
             ]);
         }
     }

@@ -28,7 +28,7 @@ class DoctorController extends Controller
         return $this->paginated(
             DoctorResource::collection($doctors),
             $doctors,
-            'Lấy danh sách bác sĩ thành công.'
+            'Doctor list retrieved successfully.'
         );
     }
 
@@ -41,7 +41,7 @@ class DoctorController extends Controller
 
         return $this->success(
             DoctorResource::make($doctor),
-            'Thêm bác sĩ thành công.',
+            'Doctor created successfully.',
             201
         );
     }
@@ -53,7 +53,7 @@ class DoctorController extends Controller
     {
         return $this->success(
             DoctorResource::make($doctor->load(['user', 'specialty'])),
-            'Lấy thông tin bác sĩ thành công.'
+            'Doctor details retrieved successfully.'
         );
     }
 
@@ -66,7 +66,7 @@ class DoctorController extends Controller
 
         return $this->success(
             DoctorResource::make($doctor),
-            'Cập nhật thông tin bác sĩ thành công.'
+            'Doctor updated successfully.'
         );
     }
 
@@ -79,7 +79,7 @@ class DoctorController extends Controller
 
         return $this->success(
             [],
-            'Xóa bác sĩ thành công.'
+            'Doctor deleted successfully.'
         );
     }
 }
