@@ -1,58 +1,95 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Clinic Management REST API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Clinic management system developed on Laravel + Docker Compose + PostgreSQL 16.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Environment & System Versions
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Docker Engine:** `29.7.0`
+- **Docker Compose:** `5.3.1` (Docker Compose Plugin v2)
+- **PHP Version (Container):** `8.4-cli`
+- **Laravel Framework:** `13.x`
+- **Database:** PostgreSQL `16`
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Environment Variables Explanation (.env)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **`DB_CONNECTION=pgsql`**: Uses PostgreSQL database management system.
+- **`DB_HOST=db`**: DB connection host name within the Docker Compose network (`db` service).
+- **`DB_PORT=5432`**: Default PostgreSQL connection port.
+- **`DB_DATABASE=clinic_app`**: Application database name.
+- **`DB_USERNAME=clinic`**: DB connection username.
+- **`DB_PASSWORD=secret`**: DB connection password.
+- **`EXAMINATION_FEE=100000`**: Default examination fee (VND).
+- **`PAYPAL_MODE=sandbox`**: PayPal API sandbox testing mode.
+- **`PAYPAL_CLIENT_ID=your-sandbox-client-id`**: PayPal REST API Client ID (Sandbox integration).
+- **`PAYPAL_CLIENT_SECRET=your-sandbox-client-secret`**: PayPal REST API Client Secret (Sandbox integration).
+- **`PAYPAL_CURRENCY=USD`**: Default currency for transactions via PayPal.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## System Architecture
 
-## Agentic Development
+The application follows the **Controller + Service** pattern to keep Controllers lean (Lean Controller), centralize business logic within the Service layer, and ensure clear separation of concerns.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### Request / Response Flow
 
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```text
+CLIENT
+  │
+  ▼
+ROUTE (routes/api.php)
+  │
+  ▼
+MIDDLEWARE (auth:sanctum, EnsurePermission)
+  │
+  ▼
+FORM REQUEST (Validation & Authorization)
+  │
+  ▼
+CONTROLLER (Routing & Service Invocation)
+  │
+  ▼
+SERVICE (Core Business Logic / DB Transaction)
+  │
+  ▼
+MODEL / ELOQUENT (PostgreSQL Interaction)
+  │
+  ▼
+API RESOURCE (Format JSON Data Structure)
+  │
+  ▼
+JSON RESPONSE (Envelope: success, message, data / errors)
+  │
+  ▼
+CLIENT
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## Guide to Running the Application with Docker
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 1. Initialize Environment
+Copy the environment configuration file from `.env.example`:
+```bash
+cp .env.example .env
+```
 
-## Code of Conduct
+### 2. Start Containers
+Build images and start services (`app` & `db` PostgreSQL 16):
+```bash
+docker compose up -d --build
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 3. Generate App Key & Run Migrations / Seed
+Run commands to generate the application key and initialize the database inside the `app` container:
+```bash
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate --seed
+```
 
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 4. Access the Application
+All APIs are served at:
+`http://localhost:8000/api`

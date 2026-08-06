@@ -1,0 +1,35 @@
+services:
+  clinic:
+    container_name: clinic
+    image: thanhdt05/clinic-management:1.0.0
+    build: .
+    ports:
+      - '8000:8000'
+    volumes:
+      - .:/var/www/html
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    container_name: db
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-clinic_app}
+      POSTGRES_USER: ${DB_USERNAME:-clinic}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-clinic} -d ${DB_DATABASE:-clinic_app}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
