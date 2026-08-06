@@ -36,36 +36,36 @@ class StoreUserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Tên không được để trống.',
-            'name.min' => 'Tên phải có ít nhất 5 ký tự.',
-            'name.max' => 'Tên không được vượt quá 255 ký tự.',
+            'name.required' => 'The name field is required.',
+            'name.min' => 'The name field must be at least 5 characters.',
+            'name.max' => 'The name field must not exceed 255 characters.',
 
-            'email.required' => 'Email không được để trống.',
-            'email.email' => 'Email không hợp lệ.',
-            'email.max' => 'Email không được vượt quá 255 ký tự.',
-            'email.unique' => 'Email đã tồn tại.',
+            'email.required' => 'The email field is required.',
+            'email.email' => 'The email field must be a valid email address.',
+            'email.max' => 'The email field must not exceed 255 characters.',
+            'email.unique' => 'The email has already been taken.',
 
-            'password.required' => 'Password không được để trống.',
-            'password.min' => 'Password phải có ít nhất 8 ký tự.',
-            'password.max' => 'Password không được vượt quá 255 ký tự.',
+            'password.required' => 'The password field is required.',
+            'password.min' => 'The password field must be at least 8 characters.',
+            'password.max' => 'The password field must not exceed 255 characters.',
 
-            'password_confirm.required' => 'Password confirm không được để trống.',
-            'password_confirm.same' => 'Password confirm không khớp.',
-            'password_confirm.max' => 'Password confirm không được vượt quá 255 ký tự.',
+            'password_confirm.required' => 'The password confirmation field is required.',
+            'password_confirm.same' => 'The password confirmation does not match.',
+            'password_confirm.max' => 'The password confirmation field must not exceed 255 characters.',
 
-            'role_id.required' => 'Vai trò không được để trống.',
-            'role_id.integer' => 'Vai trò không hợp lệ.',
-            'role_id.exists' => 'Vai trò không tồn tại.',
+            'role_id.required' => 'The role field is required.',
+            'role_id.integer' => 'The selected role is invalid.',
+            'role_id.exists' => 'The selected role does not exist.',
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'name' => 'Tên',
+            'name' => 'Name',
             'email' => 'Email',
             'password' => 'Password',
-            'role_id' => 'Vai trò',
+            'role_id' => 'Role',
         ];
     }
 }

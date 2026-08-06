@@ -27,7 +27,7 @@ class UserController extends Controller
         return $this->paginated(
             UserResource::collection($users),
             $users,
-            'Lấy danh sách người dùng thành công.'
+            'User list retrieved successfully.'
         );
     }
 
@@ -39,7 +39,7 @@ class UserController extends Controller
 
         return $this->success(
             UserResource::make($user),
-            'Tạo người dùng thành công.',
+            'User created successfully.',
             201
         );
     }
@@ -48,7 +48,7 @@ class UserController extends Controller
     {
         return $this->success(
             UserResource::make($user->load(['role.permissions'])),
-            'Lấy thông tin người dùng thành công.'
+            'User details retrieved successfully.'
         );
     }
 
@@ -61,7 +61,7 @@ class UserController extends Controller
 
         return $this->success(
             UserResource::make($user),
-            'Cập nhật người dùng thành công.'
+            'User updated successfully.'
         );
     }
 
@@ -71,7 +71,7 @@ class UserController extends Controller
 
         return $this->success(
             [],
-            'Xóa người dùng thành công.',
+            'User deleted successfully.',
         );
     }
 
@@ -84,7 +84,7 @@ class UserController extends Controller
 
         return $this->success(
             UserResource::make($user),
-            'Cập nhật trạng thái người dùng thành công.',
+            'User status updated successfully.',
         );
     }
 }

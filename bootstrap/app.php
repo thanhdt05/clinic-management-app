@@ -67,7 +67,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
                 return response()->json([
                     'success' => false,
-                    'message' => $statusCode === 403 ? 'Không có quyền truy cập' : ($statusCode === 404 ? 'Không tìm thấy tài nguyên' : $e->getMessage()),
+                    'message' => $statusCode === 403 ? 'Access denied' : ($statusCode === 404 ? 'Resource not found' : $e->getMessage()),
                     'errors' => [],
                 ], $statusCode);
             }
@@ -87,7 +87,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Phương thức HTTP không được hỗ trợ cho endpoint này.',
+                    'message' => 'The HTTP method is not supported for this endpoint.',
                     'errors' => [],
                 ], 405);
             }

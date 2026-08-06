@@ -81,7 +81,7 @@ class UserService
 
         if ($this->countActiveAdmin() <= 1) {
             throw ValidationException::withMessages([
-                'role_id' => 'Không thể đổi vai trò hoặc vô hiệu hóa Admin cuối cùng trong hệ thống!',
+                'role_id' => 'Cannot change role or deactivate the last active Admin in the system!',
             ]);
         }
     }
