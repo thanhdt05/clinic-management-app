@@ -1,10 +1,10 @@
 # Clinic Management REST API
 
-Hệ thống quản lý phòng khám phát triển trên nền tảng Laravel + Docker Compose + PostgreSQL 16.
+Clinic management system developed on Laravel + Docker Compose + PostgreSQL 16.
 
 ---
 
-## Phiên bản Môi trường & Hệ thống
+## Environment & System Versions
 
 - **Docker Engine:** `29.7.0`
 - **Docker Compose:** `5.3.1` (Docker Compose Plugin v2)
@@ -14,27 +14,27 @@ Hệ thống quản lý phòng khám phát triển trên nền tảng Laravel + 
 
 ---
 
-## Giải thích các biến môi trường (.env)
+## Environment Variables Explanation (.env)
 
-- **`DB_CONNECTION=pgsql`**: Sử dụng hệ quản trị cơ sở dữ liệu PostgreSQL.
-- **`DB_HOST=db`**: Tên host kết nối DB trong mạng Docker Compose (service `db`).
-- **`DB_PORT=5432`**: Cổng kết nối PostgreSQL mặc định.
-- **`DB_DATABASE=clinic_app`**: Tên cơ sở dữ liệu của ứng dụng.
-- **`DB_USERNAME=clinic`**: Tên tài khoản kết nối DB.
-- **`DB_PASSWORD=secret`**: Mật khẩu kết nối DB.
-- **`EXAMINATION_FEE=100000`**: Phí khám bệnh mặc định (VND).
-- **`PAYPAL_MODE=sandbox`**: Chế độ thử nghiệm (sandbox) của PayPal API.
-- **`PAYPAL_CLIENT_ID=your-sandbox-client-id`**: Client ID tích hợp PayPal REST API (Sandbox).
-- **`PAYPAL_CLIENT_SECRET=your-sandbox-client-secret`**: Client Secret tích hợp PayPal REST API (Sandbox).
-- **`PAYPAL_CURRENCY=USD`**: Đơn vị tiền tệ mặc định giao dịch qua PayPal.
+- **`DB_CONNECTION=pgsql`**: Uses PostgreSQL database management system.
+- **`DB_HOST=db`**: DB connection host name within the Docker Compose network (`db` service).
+- **`DB_PORT=5432`**: Default PostgreSQL connection port.
+- **`DB_DATABASE=clinic_app`**: Application database name.
+- **`DB_USERNAME=clinic`**: DB connection username.
+- **`DB_PASSWORD=secret`**: DB connection password.
+- **`EXAMINATION_FEE=100000`**: Default examination fee (VND).
+- **`PAYPAL_MODE=sandbox`**: PayPal API sandbox testing mode.
+- **`PAYPAL_CLIENT_ID=your-sandbox-client-id`**: PayPal REST API Client ID (Sandbox integration).
+- **`PAYPAL_CLIENT_SECRET=your-sandbox-client-secret`**: PayPal REST API Client Secret (Sandbox integration).
+- **`PAYPAL_CURRENCY=USD`**: Default currency for transactions via PayPal.
 
 ---
 
-## Kiến trúc Hệ thống
+## System Architecture
 
-Ứng dụng tuân theo mô hình **Controller + Service** nhằm đảm bảo Controller tinh gọn (Lean Controller), xử lý nghiệp vụ tập trung tại tầng Service và phân tách trách nhiệm rõ ràng.
+The application follows the **Controller + Service** pattern to keep Controllers lean (Lean Controller), centralize business logic within the Service layer, and ensure clear separation of concerns.
 
-### Luồng xử lý Request / Response
+### Request / Response Flow
 
 ```text
 CLIENT
@@ -49,16 +49,16 @@ MIDDLEWARE (auth:sanctum, EnsurePermission)
 FORM REQUEST (Validation & Authorization)
   │
   ▼
-CONTROLLER (Điều hướng & gọi Service)
+CONTROLLER (Routing & Service Invocation)
   │
   ▼
-SERVICE (Xử lý nghiệp vụ chính / DB Transaction)
+SERVICE (Core Business Logic / DB Transaction)
   │
   ▼
-MODEL / ELOQUENT (Tương tác với PostgreSQL)
+MODEL / ELOQUENT (PostgreSQL Interaction)
   │
   ▼
-API RESOURCE (Format cấu trúc dữ liệu JSON)
+API RESOURCE (Format JSON Data Structure)
   │
   ▼
 JSON RESPONSE (Envelope: success, message, data / errors)
@@ -69,28 +69,27 @@ CLIENT
 
 ---
 
+## Guide to Running the Application with Docker
 
-## Hướng dẫn Chạy Ứng dụng với Docker
-
-### 1. Khởi tạo môi trường
-Sao chép file cấu hình môi trường từ mẫu `.env.example`:
+### 1. Initialize Environment
+Copy the environment configuration file from `.env.example`:
 ```bash
 cp .env.example .env
 ```
 
-### 2. Khởi chạy các container
-Build image và khởi chạy các dịch vụ (`app` & `db` PostgreSQL 16):
+### 2. Start Containers
+Build images and start services (`app` & `db` PostgreSQL 16):
 ```bash
 docker compose up -d --build
 ```
 
-### 3. Khởi tạo Key & Chạy Migration / Seed
-Chạy lệnh tạo app key và khởi tạo cơ sở dữ liệu bên trong container `app`:
+### 3. Generate App Key & Run Migrations / Seed
+Run commands to generate the application key and initialize the database inside the `app` container:
 ```bash
 docker compose exec app php artisan key:generate
 docker compose exec app php artisan migrate --seed
 ```
 
-### 4. Truy cập Ứng dụng
-Tất cả các API được phục vụ tại:
+### 4. Access the Application
+All APIs are served at:
 `http://localhost:8000/api`
