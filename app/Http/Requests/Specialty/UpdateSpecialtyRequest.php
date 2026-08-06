@@ -34,16 +34,16 @@ class UpdateSpecialtyRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.unique' => 'Tên chuyên khoa đã tồn tại.',
-            'name.max' => 'Tên chuyên khoa không được vượt quá 255 ký tự.',
+            'name.unique' => 'The specialty name has already been taken.',
+            'name.max' => 'The specialty name field must not exceed 255 characters.',
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'name' => 'Tên chuyên khoa',
-            'description' => 'Mô tả chuyên khoa',
+            'name' => 'Specialty Name',
+            'description' => 'Specialty Description',
         ];
     }
 }
