@@ -36,23 +36,23 @@ class UpdatePatientRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'full_name.sometimes' => 'Họ và tên là bắt buộc',
-            'full_name.max' => 'Họ và tên không được vượt quá 255 ký tự',
+            'full_name.sometimes' => 'The full name field is required when provided.',
+            'full_name.max' => 'The full name field must not exceed 255 characters.',
 
-            'gender.sometimes' => 'Giới tính là bắt buộc',
-            'gender.in' => 'Giới tính không hợp lệ',
+            'gender.sometimes' => 'The gender field is required when provided.',
+            'gender.in' => 'The selected gender is invalid.',
 
-            'date_of_birth.sometimes' => 'Ngày sinh là bắt buộc',
-            'date_of_birth.date' => 'Ngày sinh không hợp lệ',
-            'date_of_birth.before_or_equal' => 'Ngày sinh không được lớn hơn ngày hiện tại',
+            'date_of_birth.sometimes' => 'The date of birth field is required when provided.',
+            'date_of_birth.date' => 'The date of birth is invalid.',
+            'date_of_birth.before_or_equal' => 'The date of birth must not be in the future.',
 
-            'phone.sometimes' => 'Số điện thoại là bắt buộc',
-            'phone.max' => 'Số điện thoại không được vượt quá 15 ký tự',
+            'phone.sometimes' => 'The phone number field is required when provided.',
+            'phone.max' => 'The phone number must not exceed 15 characters.',
 
-            'email.email' => 'Email không hợp lệ',
-            'email.max' => 'Email không được vượt quá 255 ký tự',
+            'email.email' => 'The email address must be a valid email address.',
+            'email.max' => 'The email address must not exceed 255 characters.',
 
-            'address.max' => 'Địa chỉ không được vượt quá 255 ký tự',
+            'address.max' => 'The address must not exceed 255 characters.',
         ];
     }
 }
