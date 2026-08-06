@@ -40,9 +40,7 @@ class EnsurePermission
         $user = $request->user();
 
         if (!$user || !$user->hasPermission($permission)) {
-            return response()->json([
-                'message' => 'Forbidden',
-            ], Response::HTTP_FORBIDDEN);
+            abort(403);
         }
 
         return $next($request);
