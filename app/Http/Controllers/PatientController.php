@@ -30,7 +30,7 @@ class PatientController extends Controller
         return $this->paginated(
             PatientResource::collection($patient),
             $patient,
-            'Lấy danh sách bệnh nhân thành công.'
+            'Patients list retrieved successfully.'
         );
     }
 
@@ -43,7 +43,7 @@ class PatientController extends Controller
 
         return $this->success(
             PatientResource::make($patient),
-            'Thêm bệnh nhân thành công.',
+            'Patient created successfully.',
             201
         );
     }
@@ -55,7 +55,7 @@ class PatientController extends Controller
     {
         return $this->success(
             PatientResource::make($patient),
-            'Lấy thông tin bệnh nhân thành công.'
+            'Patient details retrieved successfully.'
         );
     }
 
@@ -68,7 +68,7 @@ class PatientController extends Controller
 
         return $this->success(
             PatientResource::make($patient),
-            'Cập nhật thông tin bệnh nhân thành công.'
+            'Patient updated successfully.'
         );
     }
 
@@ -81,7 +81,7 @@ class PatientController extends Controller
 
         return $this->success(
             [],
-            'Xóa thông tin bệnh nhân thành công.'
+            'Patient deleted successfully.'
         );
     }
 }
