@@ -32,17 +32,17 @@ class StoreSpecialtyRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Tên chuyên khoa không được để trống.',
-            'name.unique' => 'Tên chuyên khoa đã tồn tại.',
-            'name.max' => 'Tên chuyên khoa không được vượt quá 255 ký tự.',
+            'name.required' => 'The specialty name field is required.',
+            'name.unique' => 'The specialty name has already been taken.',
+            'name.max' => 'The specialty name field must not exceed 255 characters.',
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'name' => 'Tên chuyên khoa',
-            'description' => 'Mô tả chuyên khoa',
+            'name' => 'Specialty Name',
+            'description' => 'Specialty Description',
         ];
     }
 }

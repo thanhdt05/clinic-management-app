@@ -28,7 +28,7 @@ class SpecialtyController extends Controller
         return $this->paginated(
             SpecialtyResource::collection($specialties),
             $specialties,
-            'Lấy danh sách chuyên khoa thành công.'
+            'Specialty list retrieved successfully.'
         );
     }
 
@@ -41,7 +41,7 @@ class SpecialtyController extends Controller
 
         return $this->success(
             SpecialtyResource::make($specialty),
-            'Thêm chuyên khoa thành công.',
+            'Specialty created successfully.',
             201
         );
     }
@@ -53,7 +53,7 @@ class SpecialtyController extends Controller
     {
         return $this->success(
             SpecialtyResource::make($specialty),
-            'Lấy thông tin chuyên khoa thành công.'
+            'Specialty details retrieved successfully.'
         );
     }
 
@@ -66,7 +66,7 @@ class SpecialtyController extends Controller
 
         return $this->success(
             SpecialtyResource::make($specialty),
-            'Cập nhật chuyên khoa thành công.',
+            'Specialty updated successfully.',
             200
         );
     }
@@ -80,7 +80,7 @@ class SpecialtyController extends Controller
 
         return $this->success(
             [],
-            'Xóa chuyên khoa thành công.',
+            'Specialty deleted successfully.',
             200
         );
     }
