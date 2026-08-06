@@ -32,7 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Xác minh thất bại',
+                    'message' => 'Validation failed',
                     'errors' => $e->errors(),
                 ], 422);
             }
@@ -42,7 +42,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Xác thực thất bại',
+                    'message' => 'Unauthenticated',
                     'errors' => [],
                 ], 401);
             }
@@ -52,7 +52,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Không có quyền truy cập',
+                    'message' => 'Access denied',
                     'errors' => [],
                 ], 403);
             }
@@ -62,7 +62,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Không tìm thấy tài nguyên',
+                    'message' => 'Resource not found',
                     'errors' => [],
                 ], 404);
             }
@@ -72,7 +72,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Lỗi server không mong muốn',
+                    'message' => 'Unexpected server error',
                     'errors' => [],
                 ], 500);
             }

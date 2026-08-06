@@ -31,12 +31,12 @@ class LoginRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.required' => 'Email không được để trống.',
-            'email.email' => 'Email không hợp lệ.',
-            'email.max' => 'Email không được vượt quá 255 ký tự.',
-            'password.required' => 'Password không được để trống.',
-            'password.min' => 'Password phải có ít nhất 8 ký tự.',
-            'password.max' => 'Password không được vượt quá 255 ký tự.',
+            'email.required' => 'The email field is required.',
+            'email.email' => 'The email field must be a valid email address.',
+            'email.max' => 'The email field must not exceed 255 characters.',
+            'password.required' => 'The password field is required.',
+            'password.min' => 'The password field must be at least 8 characters.',
+            'password.max' => 'The password field must not exceed 255 characters.',
         ];
     }
 

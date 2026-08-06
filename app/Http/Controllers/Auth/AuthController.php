@@ -22,11 +22,11 @@ class AuthController extends Controller
         $user = User::where('email', $validate['email'])->first();
 
         if (!$user || !Hash::check($validate['password'], $user->password)) {
-            return $this->error([], 'Sai tên đăng nhập hoặc mật khẩu.', 401);
+            return $this->error([], 'Invalid credentials', 401);
         }
 
         if (!$user->is_active) {
-            return $this->error([], 'Tài khoản không hoạt động.', 401);
+            return $this->error([], 'Account is inactive', 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -34,7 +34,7 @@ class AuthController extends Controller
         return $this->success([
             'user' => UserResource::make($user),
             'token' => $token,
-        ], 'Đăng nhập thành công.');
+        ], 'Login successful.');
     }
 
     public function logout(Request $request)
@@ -45,7 +45,7 @@ class AuthController extends Controller
             $token->delete();
         }
 
-        return $this->success([], 'Đăng xuất thành công.');
+        return $this->success([], 'Logout successful.');
     }
 
     public function me(Request $request)
@@ -54,7 +54,7 @@ class AuthController extends Controller
 
         return $this->success(
             ['user' => UserResource::make($user)],
-            'Lấy thông tin người dùng thành công.'
+            'User profile retrieved successfully.'
         );
     }
 }
