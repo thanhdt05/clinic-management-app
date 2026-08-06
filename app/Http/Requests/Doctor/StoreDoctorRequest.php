@@ -34,31 +34,31 @@ class StoreDoctorRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'user_id.required' => 'User ID không được để trống.',
-            'user_id.integer' => 'User ID phải là số nguyên.',
-            'user_id.exists' => 'User ID không tồn tại.',
-            'user_id.unique' => 'User ID đã tồn tại.',
+            'user_id.required' => 'The user field is required.',
+            'user_id.integer' => 'The selected user is invalid.',
+            'user_id.exists' => 'The selected user does not exist.',
+            'user_id.unique' => 'The user has already been assigned as a doctor.',
 
-            'specialty_id.required' => 'Specialty ID không được để trống.',
-            'specialty_id.integer' => 'Specialty ID không hợp lệ.',
-            'specialty_id.exists' => 'Specialty ID không tồn tại.',
+            'specialty_id.required' => 'The specialty field is required.',
+            'specialty_id.integer' => 'The selected specialty is invalid.',
+            'specialty_id.exists' => 'The selected specialty does not exist.',
 
-            'license_number.required' => 'License number không được để trống.',
-            'license_number.string' => 'License number không hợp lệ.',
-            'license_number.max' => 'License number không được vượt quá 255 ký tự.',
-            'license_number.unique' => 'License number đã tồn tại.',
+            'license_number.required' => 'The license number field is required.',
+            'license_number.string' => 'The license number field must be a string.',
+            'license_number.max' => 'The license number field must not exceed 255 characters.',
+            'license_number.unique' => 'The license number has already been taken.',
 
-            'bio.string' => 'Bio không hợp lệ.',
+            'bio.string' => 'The bio field must be a string.',
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'user_id' => 'Người dùng',
-            'specialty_id' => 'Chuyên khoa',
-            'license_number' => 'Số giấy phép hành nghề',
-            'bio' => 'Thông tin',
+            'user_id' => 'User',
+            'specialty_id' => 'Specialty',
+            'license_number' => 'License Number',
+            'bio' => 'Bio',
         ];
     }
 }

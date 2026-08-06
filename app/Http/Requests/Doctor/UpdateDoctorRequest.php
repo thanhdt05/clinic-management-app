@@ -35,23 +35,23 @@ class UpdateDoctorRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'specialty_id.integer' => 'Specialty ID phải là số nguyên.',
-            'specialty_id.exists' => 'Specialty ID không tồn tại.',
+            'specialty_id.integer' => 'The selected specialty is invalid.',
+            'specialty_id.exists' => 'The selected specialty does not exist.',
 
-            'license_number.string' => 'Số giấy phép không hợp lệ.',
-            'license_number.max' => 'Số giấy phép không được vượt quá 255 ký tự.',
-            'license_number.unique' => 'Số giấy phép đã tồn tại.',
+            'license_number.string' => 'The license number field must be a string.',
+            'license_number.max' => 'The license number field must not exceed 255 characters.',
+            'license_number.unique' => 'The license number has already been taken.',
 
-            'bio.string' => 'Thông tin không hợp lệ.',
+            'bio.string' => 'The bio field must be a string.',
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'specialty_id' => 'Chuyên khoa',
-            'license_number' => 'Số giấy phép hành nghề',
-            'bio' => 'Thông tin',
+            'specialty_id' => 'Specialty',
+            'license_number' => 'License Number',
+            'bio' => 'Bio',
         ];
     }
 }
