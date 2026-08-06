@@ -36,6 +36,10 @@ class AppointmentService
             $query->whereDate('scheduled_at', $filter['date']);
         }
 
+        if (isset($filter['status'])) {
+            $query->where('status', $filter['status']);
+        }
+
         return $query->paginate($filter['per_page'] ?? self::PER_PAGE);
     }
 
@@ -84,7 +88,7 @@ class AppointmentService
             'completed' => [],
         ];
 
-        if (!in_array($status, $allowedTransitions[$appointment->status] ?? [])) {
+        if (!in_array($status, $allowedTransitions[$appointment->status] ?? [], true)) {
             throw ValidationException::withMessages([
                 'status' => 'Invalid status transition for this appointment.',
             ]);
