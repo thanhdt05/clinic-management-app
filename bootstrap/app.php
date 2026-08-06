@@ -6,9 +6,12 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -48,13 +51,25 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
-        $exceptions->render(function (AccessDeniedHttpException $e, Request $request) {
+        $exceptions->render(function (AccessDeniedHttpException|AuthorizationException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Access denied',
                     'errors' => [],
                 ], 403);
+            }
+        });
+
+        $exceptions->render(function (HttpException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                $statusCode = $e->getStatusCode();
+
+                return response()->json([
+                    'success' => false,
+                    'message' => $statusCode === 403 ? 'Access denied' : ($statusCode === 404 ? 'Resource not found' : $e->getMessage()),
+                    'errors' => [],
+                ], $statusCode);
             }
         });
 
@@ -65,6 +80,16 @@ return Application::configure(basePath: dirname(__DIR__))
                     'message' => 'Resource not found',
                     'errors' => [],
                 ], 404);
+            }
+        });
+
+        $exceptions->render(function (MethodNotAllowedHttpException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'The HTTP method is not supported for this endpoint.',
+                    'errors' => [],
+                ], 405);
             }
         });
 
