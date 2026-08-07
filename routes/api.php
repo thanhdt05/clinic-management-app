@@ -3,6 +3,7 @@
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\ExaminationController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\UserController;
@@ -32,5 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::patch('appointments/{appointment}/status', [AppointmentController::class, 'updateStatus'])
             ->name('appointments.updateStatus');
+
+        Route::apiResource('examinations', ExaminationController::class)->only(['index','store', 'show', 'update']);
     });
 });
