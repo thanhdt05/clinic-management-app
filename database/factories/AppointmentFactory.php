@@ -22,7 +22,7 @@ class AppointmentFactory extends Factory
         return [
             'patient_id' => Patient::factory(),
             'doctor_id' => Doctor::factory(),
-            'scheduled_at' => $this->faker->dateTimeBetween('-1 month', '+1 month'),
+            'scheduled_at' => $this->faker->dateTimeBetween('-1 day', '+1 day')->format('Y-m-d H:i:s'),
             'status' => $this->faker->randomElement(['scheduled', 'confirmed', 'cancelled', 'completed']),
             'reason' => $this->faker->randomElement([
                 'Overdue check-up',
