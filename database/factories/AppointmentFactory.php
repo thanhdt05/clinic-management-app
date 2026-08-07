@@ -25,12 +25,17 @@ class AppointmentFactory extends Factory
             'scheduled_at' => $this->faker->dateTimeBetween('-1 month', '+1 month'),
             'status' => $this->faker->randomElement(['scheduled', 'confirmed', 'cancelled', 'completed']),
             'reason' => $this->faker->randomElement([
-                'Khám sức khỏe tổng quát',
-                'Tái khám định kỳ',
-                'Kiểm tra huyết áp và tim mạch',
-                'Sốt nhẹ, đau họng',
-                'Tư vấn dinh dưỡng',
-                'Đau dạ dày, đầy hơi',
+                'Overdue check-up',
+                'Regular follow-up',
+                'Blood pressure and cardiovascular check-up',
+                'Fever, sore throat',
+                'Nutritional counseling',
+                'Stomachache, bloating',
+                'Check-up for flu',
+                'Diabetes management',
+                'Consultation for chronic pain',
+                'Skin condition evaluation',
+                'Pediatric check-up'
             ]),
         ];
     }
