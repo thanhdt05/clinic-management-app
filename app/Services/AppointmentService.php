@@ -4,12 +4,14 @@ namespace App\Services;
 
 use App\Models\Appointment;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
 
 class AppointmentService
 {
     private const int PER_PAGE = 10;
+    private const int DEFAULT_DURATION_MINUTES = 30;
 
     public function getAll(?User $user = null, array $filter = []): LengthAwarePaginator
     {
@@ -45,6 +47,8 @@ class AppointmentService
 
     public function create(array $data): Appointment
     {
+        $this->checkDoctorAvailable($data['doctor_id'], $data['scheduled_at']);
+
         $appointment = Appointment::create($data);
         return $appointment->load([
             'patient',
@@ -68,6 +72,10 @@ class AppointmentService
             throw ValidationException::withMessages([
                 'status' => 'Appointment has already been confirmed, cancelled, or completed.',
             ]);
+        }
+
+        if (isset($data['scheduled_at'])) {
+            $this->checkDoctorAvailable($appointment->doctor_id, $data['scheduled_at'], $appointment->id);
         }
 
         $appointment->update($data);
@@ -101,5 +109,28 @@ class AppointmentService
             'doctor.user',
             'doctor.specialty'
         ]);
+    }
+
+    public function checkDoctorAvailable(?int $doctorId, string $scheduledAt, ?int $currentAppointmentId = null): void
+    {
+        $newStart = Carbon::parse($scheduledAt);
+        $newEnd = $newStart->copy()->addMinutes(self::DEFAULT_DURATION_MINUTES);
+        $oldStart = $newStart->copy()->subMinutes(self::DEFAULT_DURATION_MINUTES);
+
+        $hasConflict = Appointment::query()
+            ->where('doctor_id', $doctorId)
+            ->where('status', '!=', 'cancelled')
+            ->where('scheduled_at', '<', $newEnd)
+            ->where('scheduled_at', '>', $oldStart)
+            ->when($currentAppointmentId,
+                fn ($query) => $query->where('id', '!=', $currentAppointmentId)
+            )
+            ->exists();
+
+        if ($hasConflict) {
+            throw ValidationException::withMessages([
+                'scheduled_at' => 'Doctor is not available at the selected time.',
+            ]);
+        }
     }
 }

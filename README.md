@@ -67,6 +67,21 @@ JSON RESPONSE (Envelope: success, message, data / errors)
 CLIENT
 ```
 
+### Appointment Schedule Conflict Rule
+
+- Each appointment occupies a fixed 30-minute time slot.
+- A doctor cannot have overlapping appointments.
+- Cancelled appointments are excluded from conflict checks.
+- Conflict validation is applied when creating or rescheduling an appointment.
+- Adjacent appointments are allowed. For example, 09:00–09:30 and 09:30–10:00 do not conflict.
+- A schedule conflict returns HTTP 422 with a validation error on `scheduled_at`.
+
+### Example Conflict
+- 09:00–09:30 (Confirmed) + 09:15–09:45 (New) → Conflict
+- 09:00–09:30 (Confirmed) + 09:30–10:00 (New) → No Conflict
+- 09:00–09:30 (Cancelled) + 09:15–09:45 (New) → No Conflict
+- 09:00–09:30 (Confirmed) + 09:45–10:15 (New) → No Conflict
+
 ---
 
 ## Guide to Running the Application with Docker
