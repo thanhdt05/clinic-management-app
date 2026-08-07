@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Appointment;
 use App\Models\Examination;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class ExaminationService
@@ -36,28 +37,47 @@ class ExaminationService
     }
     public function create(User $user, array $data)
     {
-        $appointment = Appointment::query()->findOrFail($data['appointment_id']);
+        return DB::transaction(function() use ($user, $data){
+            $appointment = Appointment::query()
+                ->lockForUpdate()
+                ->findOrFail($data['appointment_id']);
 
-        if (!$user->doctor || $user->doctor->id !== $appointment->doctor_id) {
-            throw ValidationException::withMessages([
-                'doctor_id' => 'You are not authorized to examine this appointment',
+            if ($appointment->status !== 'confirmed')
+            {
+                throw ValidationException::withMessages([
+                    'appointment_id' => 'Only confirmed appointment can create examination'
+                ]);
+            }
+
+            $isDoctor = $user->doctor && $user->doctor->id === $appointment->doctor_id;
+            $isAdmin = $user->role?->name === 'ADMIN';
+
+            if (!$isDoctor && !$isAdmin) {
+                throw ValidationException::withMessages([
+                    'doctor_id' => 'You are not authorized to examine this appointment',
+                ]);
+            }
+
+            $examination = Examination::create([
+                'appointment_id' => $appointment->id,
+                'doctor_id' => $appointment->doctor_id,
+                'patient_id' => $appointment->patient_id,
+                'diagnosis' => $data['diagnosis'],
+                'notes' => $data['notes'] ?? null,
+                'examined_at' => now(),
             ]);
-        }
 
-        $examination = Examination::create([
-            'appointment_id' => $appointment->id,
-            'doctor_id' => $appointment->doctor_id,
-            'patient_id' => $appointment->patient_id,
-            'diagnosis' => $data['diagnosis'],
-            'notes' => $data['notes'] ?? null,
-            'examined_at' => $data['examined_at'] ?? now(),
-        ]);
+            $appointment->update([
+                'status' => 'completed'
+            ]);
 
-        return $examination->load(
-            'appointment',
-            'patient',
-            'doctor.user'
-        );
+            return $examination->load(
+                'appointment',
+                'patient',
+                'doctor.user',
+                'doctor.specialty'
+            );
+        });
     }
     
     public function getDetail(User $user, Examination $examination){
