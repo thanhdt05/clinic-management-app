@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Permission;
 use App\Models\Role;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class RolePermissionSeeder extends Seeder
@@ -69,7 +68,6 @@ class RolePermissionSeeder extends Seeder
                 'MEDICINES.DELETE',
                 'MEDICINES.ADJUSTSTOCK',
 
-
                 'PRESCRIPTIONS.FINDALL',
                 'PRESCRIPTIONS.FINDONE',
             ],
@@ -93,13 +91,13 @@ class RolePermissionSeeder extends Seeder
 
                 'APPOINTMENTS.FINDALL',
                 'APPOINTMENTS.FINDONE',
-            ]
+            ],
         ];
 
         $admin = Role::where('name', 'ADMIN')->firstOrFail();
 
         $permissions = Permission::pluck('id', 'name');
-        
+
         $admin->permissions()->sync(
             $permissions->values()->all()
         );
@@ -107,8 +105,8 @@ class RolePermissionSeeder extends Seeder
         foreach ($rolePermissions as $roleName => $permissionName) {
             $role = Role::where('name', $roleName)->firstOrFail();
 
-            $permissionIds = collect($permissionName) 
-                ->map(fn (string $name) => $permissions[$name]) 
+            $permissionIds = collect($permissionName)
+                ->map(fn (string $name) => $permissions[$name])
                 ->all();
 
             $role->permissions()->sync($permissionIds);
