@@ -1,21 +1,22 @@
 <?php
 
+use App\Constants\Messages\ExceptionMessage;
 use App\Http\Middleware\EnsurePermission;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
-
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__ . '/../routes/web.php',
-        api: __DIR__ . '/../routes/api.php',
-        commands: __DIR__ . '/../routes/console.php',
+        web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
+        commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
@@ -25,16 +26,16 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
-            fn(Request $request) => $request->is('api/*') || $request->expectsJson(),
+            fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
 
         $exceptions->render(function (ValidationException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Validation failed',
+                    'message' => ExceptionMessage::VALIDATION_FAILED,
                     'errors' => $e->errors(),
-                ], 422);
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
         });
 
@@ -42,9 +43,9 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Unauthenticated',
+                    'message' => ExceptionMessage::UNAUTHENTICATED,
                     'errors' => [],
-                ], 401);
+                ], Response::HTTP_UNAUTHORIZED);
             }
         });
 
@@ -52,9 +53,9 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Access denied',
+                    'message' => ExceptionMessage::ACCESS_DENIED,
                     'errors' => [],
-                ], 403);
+                ], Response::HTTP_FORBIDDEN);
             }
         });
 
@@ -62,9 +63,9 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Resource not found',
+                    'message' => ExceptionMessage::RESOURCE_NOT_FOUND,
                     'errors' => [],
-                ], 404);
+                ], Response::HTTP_NOT_FOUND);
             }
         });
 
@@ -72,9 +73,9 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Unexpected server error',
+                    'message' => ExceptionMessage::UNEXPECTED_SERVER_ERROR,
                     'errors' => [],
-                ], 500);
+                ], Response::HTTP_INTERNAL_SERVER_ERROR);
             }
         });
     })->create();

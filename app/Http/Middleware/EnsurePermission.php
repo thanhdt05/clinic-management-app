@@ -26,7 +26,7 @@ class EnsurePermission
     {
         $controllerAction = $request->route()?->getAction('controller');
 
-        if (! \is_string($controllerAction) || !str_contains($controllerAction, '@')) {
+        if (! \is_string($controllerAction) || ! str_contains($controllerAction, '@')) {
             return $next($request);
         }
 
@@ -39,8 +39,8 @@ class EnsurePermission
 
         $user = $request->user();
 
-        if (!$user || !$user->hasPermission($permission)) {
-            abort(403);
+        if (! $user || ! $user->hasPermission($permission)) {
+            abort(Response::HTTP_FORBIDDEN);
         }
 
         return $next($request);

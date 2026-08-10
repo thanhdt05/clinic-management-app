@@ -22,7 +22,7 @@ class UserResource extends JsonResource
             'role' => [
                 'id' => $this->role->id,
                 'name' => $this->role->name,
-                'display_name' => $this->role->display_name
+                'display_name' => $this->role->display_name,
             ],
             'permissions' => $this->role->permissions->pluck('name')->values(),
         ];

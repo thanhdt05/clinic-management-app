@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Permission;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class PermissionSeeder extends Seeder
@@ -22,7 +21,7 @@ class PermissionSeeder extends Seeder
             'USERS.UPDATESTATUS',
 
             'ROLES.FINDALL',
-            
+
             'SPECIALTIES.FINDALL',
             'SPECIALTIES.CREATE',
             'SPECIALTIES.FINDONE',
@@ -77,13 +76,13 @@ class PermissionSeeder extends Seeder
             'PAYMENTS.CREATE',
             'PAYMENTS.CAPTURE',
 
-            'STATS.SHOW'
+            'STATS.SHOW',
         ];
 
         foreach ($permissions as $permission) {
             Permission::updateOrCreate(
                 ['name' => $permission],
-                ['display_name'=> $permission]
+                ['display_name' => $permission]
             );
         }
     }

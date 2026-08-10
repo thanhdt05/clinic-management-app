@@ -20,7 +20,6 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-
     protected $fillable = [
         'name',
         'email',
@@ -50,6 +49,6 @@ class User extends Authenticatable
 
     public function hasPermission(string $permission): bool
     {
-        return $this->role()->whereHas('permissions', fn($query) => $query->where('permissions.name', $permission))->exists();
+        return $this->role()->whereHas('permissions', fn ($query) => $query->where('permissions.name', $permission))->exists();
     }
 }
