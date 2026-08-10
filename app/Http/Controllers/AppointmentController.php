@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\Messages\AppointmentMessage;
 use App\Http\Requests\Appointment\IndexAppointmentRequest;
 use App\Http\Requests\Appointment\StoreAppointmentRequest;
 use App\Http\Requests\Appointment\UpdateAppointmentRequest;
@@ -12,6 +13,7 @@ use App\Services\AppointmentService;
 use App\Traits\HttpResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class AppointmentController extends Controller
 {
@@ -28,7 +30,7 @@ class AppointmentController extends Controller
         return $this->paginated(
             AppointmentResource::collection($appointments),
             $appointments,
-            'Appointment list retrieved successfully.'
+            AppointmentMessage::APPOINTMENT_LIST_RETRIEVED
         );
     }
 
@@ -38,8 +40,8 @@ class AppointmentController extends Controller
 
         return $this->success(
             AppointmentResource::make($appointment),
-            'Appointment created successfully.',
-            201
+            AppointmentMessage::APPOINTMENT_CREATED,
+            Response::HTTP_CREATED
         );
     }
 
@@ -49,7 +51,7 @@ class AppointmentController extends Controller
 
         return $this->success(
             AppointmentResource::make($appointment),
-            'Appointment details retrieved successfully.'
+            AppointmentMessage::APPOINTMENT_DETAILS_RETRIEVED
         );
     }
 
@@ -59,7 +61,7 @@ class AppointmentController extends Controller
 
         return $this->success(
             AppointmentResource::make($appointment),
-            'Appointment updated successfully.'
+            AppointmentMessage::APPOINTMENT_UPDATED
         );
     }
 
@@ -69,7 +71,7 @@ class AppointmentController extends Controller
 
         return $this->success(
             AppointmentResource::make($appointment),
-            'Appointment status updated successfully.'
+            AppointmentMessage::APPOINTMENT_STATUS_UPDATED
         );
     }
 }

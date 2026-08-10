@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\Messages\AppointmentMessage;
 use App\Models\Appointment;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -14,12 +15,13 @@ class AppointmentService
     public function getAll(?User $user = null, array $filter = []): LengthAwarePaginator
     {
         $query = Appointment::query()
-                        ->with([
-                            'patient',
-                            'doctor.user',
-                            'doctor.specialty'
-                        ])
-                        ->latest('scheduled_at');
+            ->with([
+                'patient',
+                'doctor.user',
+                'doctor.specialty',
+            ])
+            ->latest('scheduled_at');
+
         if ($user?->doctor) {
             $query->where('doctor_id', $user->doctor->id);
         }
@@ -46,10 +48,11 @@ class AppointmentService
     public function create(array $data): Appointment
     {
         $appointment = Appointment::create($data);
+
         return $appointment->load([
             'patient',
             'doctor.user',
-            'doctor.specialty'
+            'doctor.specialty',
         ]);
     }
 
@@ -58,7 +61,7 @@ class AppointmentService
         return $appointment->load([
             'patient',
             'doctor.user',
-            'doctor.specialty'
+            'doctor.specialty',
         ]);
     }
 
@@ -66,7 +69,7 @@ class AppointmentService
     {
         if ($appointment->status != 'scheduled') {
             throw ValidationException::withMessages([
-                'status' => 'Appointment has already been confirmed, cancelled, or completed.',
+                'status' => AppointmentMessage::CANNOT_UPDATE_NON_SCHEDULED,
             ]);
         }
 
@@ -75,11 +78,11 @@ class AppointmentService
         return $appointment->load([
             'patient',
             'doctor.user',
-            'doctor.specialty'
+            'doctor.specialty',
         ]);
     }
 
-    public function updateStatus(Appointment $appointment, string $status)
+    public function updateStatus(Appointment $appointment, string $status): Appointment
     {
         $allowedTransitions = [
             'scheduled' => ['confirmed', 'cancelled'],
@@ -88,9 +91,9 @@ class AppointmentService
             'completed' => [],
         ];
 
-        if (!in_array($status, $allowedTransitions[$appointment->status] ?? [], true)) {
+        if (! in_array($status, $allowedTransitions[$appointment->status] ?? [], true)) {
             throw ValidationException::withMessages([
-                'status' => 'Invalid status transition for this appointment.',
+                'status' => AppointmentMessage::INVALID_STATUS_TRANSITION,
             ]);
         }
 
@@ -99,7 +102,7 @@ class AppointmentService
         return $appointment->refresh()->load([
             'patient',
             'doctor.user',
-            'doctor.specialty'
+            'doctor.specialty',
         ]);
     }
 }
