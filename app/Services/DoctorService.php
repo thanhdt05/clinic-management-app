@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\Messages\DoctorMessage;
 use App\Models\Doctor;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -50,7 +51,7 @@ class DoctorService
 
         if ($user->role?->name !== 'DOCTOR') {
             throw ValidationException::withMessages([
-                'user_id' => 'The selected user does not have the Doctor role.',
+                'user_id' => DoctorMessage::USER_NOT_DOCTOR,
             ]);
         }
     }
