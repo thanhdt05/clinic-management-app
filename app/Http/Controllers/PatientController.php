@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\Messages\PatientMessage;
 use App\Http\Requests\Patient\StorePatientRequest;
 use App\Http\Requests\Patient\UpdatePatientRequest;
 use App\Http\Resources\PatientResource;
@@ -10,16 +11,16 @@ use App\Services\PatientService;
 use App\Traits\HttpResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class PatientController extends Controller
 {
-
     use HttpResponse;
 
     public function __construct(
         private readonly PatientService $patientService
-    ) {
-    }
+    ) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -30,7 +31,7 @@ class PatientController extends Controller
         return $this->paginated(
             PatientResource::collection($patient),
             $patient,
-            'Patients list retrieved successfully.'
+            PatientMessage::PATIENT_LIST_RETRIEVED
         );
     }
 
@@ -43,8 +44,8 @@ class PatientController extends Controller
 
         return $this->success(
             PatientResource::make($patient),
-            'Patient created successfully.',
-            201
+            PatientMessage::PATIENT_CREATED,
+            Response::HTTP_CREATED
         );
     }
 
@@ -55,7 +56,7 @@ class PatientController extends Controller
     {
         return $this->success(
             PatientResource::make($patient),
-            'Patient details retrieved successfully.'
+            PatientMessage::PATIENT_DETAILS_RETRIEVED
         );
     }
 
@@ -68,7 +69,7 @@ class PatientController extends Controller
 
         return $this->success(
             PatientResource::make($patient),
-            'Patient updated successfully.'
+            PatientMessage::PATIENT_UPDATED
         );
     }
 
@@ -81,7 +82,7 @@ class PatientController extends Controller
 
         return $this->success(
             [],
-            'Patient deleted successfully.'
+            PatientMessage::PATIENT_DELETED
         );
     }
 }
