@@ -20,16 +20,16 @@ class ExaminationResource extends JsonResource
             'patient_id' => [
                 'id' => $this->patient->id,
                 'code' => $this->patient->code,
-                'full_name' => $this->patient->full_name
+                'full_name' => $this->patient->full_name,
             ],
             'doctor_id' => [
                 'id' => $this->doctor->id,
                 'name' => $this->doctor->user->name,
-                'license_number' => $this->doctor->license_number
+                'license_number' => $this->doctor->license_number,
             ],
             'diagnosis' => $this->diagnosis,
             'notes' => $this->notes,
-            
+
             'examined_at' => $this->examined_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

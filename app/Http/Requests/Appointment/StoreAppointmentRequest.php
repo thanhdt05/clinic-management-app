@@ -33,7 +33,6 @@ class StoreAppointmentRequest extends FormRequest
         ];
     }
 
-
     public function messages(): array
     {
         return [

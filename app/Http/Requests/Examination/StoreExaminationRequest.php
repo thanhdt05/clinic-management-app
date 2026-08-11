@@ -29,7 +29,7 @@ class StoreExaminationRequest extends FormRequest
                 'required',
                 'integer',
                 Rule::exists(Appointment::class, 'id'),
-                Rule::unique('examinations', 'appointment_id')
+                Rule::unique('examinations', 'appointment_id'),
             ],
             'diagnosis' => ['required', 'string'],
             'notes' => ['nullable', 'string'],

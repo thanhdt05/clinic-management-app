@@ -25,7 +25,7 @@ class StoreSpecialtyRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255', Rule::unique('specialties', 'name')],
-            'description' => ['nullable', 'string']
+            'description' => ['nullable', 'string'],
         ];
     }
 

@@ -14,7 +14,7 @@ class ExaminationService
 {
     private const int PER_PAGE = 10;
 
-    // Doctor can only view their own patient's exam, 
+    // Doctor can only view their own patient's exam,
     // Cashier and admin can view everyone examination
     public function getAll(User $user, array $filter = []): LengthAwarePaginator
     {
@@ -43,22 +43,21 @@ class ExaminationService
 
     public function create(User $user, array $data): Examination
     {
-        return DB::transaction(function() use ($user, $data){
+        return DB::transaction(function () use ($user, $data) {
             $appointment = Appointment::query()
                 ->lockForUpdate()
                 ->findOrFail($data['appointment_id']);
 
-            if ($appointment->status !== 'confirmed')
-            {
+            if ($appointment->status !== 'confirmed') {
                 throw ValidationException::withMessages([
-                    'appointment_id' => 'Only confirmed appointment can create examination'
+                    'appointment_id' => 'Only confirmed appointment can create examination',
                 ]);
             }
 
             $isDoctor = $user->doctor && $user->doctor->id === $appointment->doctor_id;
             $isAdmin = $user->role?->name === 'ADMIN';
 
-            if (!$isDoctor && !$isAdmin) {
+            if (! $isDoctor && ! $isAdmin) {
                 throw ValidationException::withMessages([
                     'doctor_id' => ExaminationMessage::UNAUTHORIZED_APPOINTMENT_EXAMINATION,
                 ]);
@@ -74,7 +73,7 @@ class ExaminationService
             ]);
 
             $appointment->update([
-                'status' => 'completed'
+                'status' => 'completed',
             ]);
 
             return $examination->load(

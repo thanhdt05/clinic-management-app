@@ -30,7 +30,7 @@ class IndexAppointmentRequest extends FormRequest
             'patient_id' => ['nullable', 'integer', Rule::exists(Patient::class, 'id')],
             'date' => ['nullable', 'date_format:Y-m-d'],
             'status' => ['nullable', Rule::in(['scheduled', 'confirmed', 'cancelled', 'completed'])],
-            'per_page' => ['nullable', 'integer', 'max:100', 'min:1']
+            'per_page' => ['nullable', 'integer', 'max:100', 'min:1'],
         ];
     }
 

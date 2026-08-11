@@ -23,10 +23,11 @@ class DoctorFactory extends Factory
         return [
             'user_id' => User::factory()->state(function () {
                 $doctorRole = Role::where('name', 'DOCTOR')->first() ?? Role::first();
+
                 return ['role_id' => $doctorRole?->id];
             }),
             'specialty_id' => Specialty::factory(),
-            'license_number' => 'DOC-' . $this->faker->unique()->numerify('######'),
+            'license_number' => 'DOC-'.$this->faker->unique()->numerify('######'),
             'bio' => $this->faker->paragraph(),
         ];
     }

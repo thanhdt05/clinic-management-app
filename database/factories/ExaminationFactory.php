@@ -34,7 +34,7 @@ class ExaminationFactory extends Factory
                 'Allergic rhinitis',
                 'Migraine without aura',
                 'Dermatitis',
-                'Sprain of ankle'
+                'Sprain of ankle',
             ]),
             'notes' => $this->faker->randomElement([
                 'Patient advised to rest for 3 days and drink plenty of fluids.',
@@ -42,7 +42,7 @@ class ExaminationFactory extends Factory
                 'Dietary modification recommended. Low sodium diet.',
                 'Continue current medication. Blood test scheduled next month.',
                 'No signs of complications. Follow up as needed.',
-                'Referred to specialist for further evaluation.'
+                'Referred to specialist for further evaluation.',
             ]),
             'examined_at' => $this->faker->dateTimeBetween('-1 month', 'now'),
         ];

@@ -35,7 +35,7 @@ class AppointmentFactory extends Factory
                 'Diabetes management',
                 'Consultation for chronic pain',
                 'Skin condition evaluation',
-                'Pediatric check-up'
+                'Pediatric check-up',
             ]),
         ];
     }
