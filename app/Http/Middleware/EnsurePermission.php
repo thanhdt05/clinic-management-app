@@ -15,6 +15,7 @@ class EnsurePermission
         'show' => 'FINDONE',
         'update' => 'UPDATE',
         'destroy' => 'DELETE',
+        'adjustStock' => 'ADJUSTSTOCK',
     ];
 
     /**
