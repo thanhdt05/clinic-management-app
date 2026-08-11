@@ -12,6 +12,21 @@ class SpecialtySeeder extends Seeder
      */
     public function run(): void
     {
-        Specialty::factory()->count(10)->create();
+        $specialties = [
+            [
+                'name' => 'General Internal Medicine',
+                'description' => 'Diagnosis and treatment of general internal diseases in adults.',
+            ],
+            [
+                'name' => 'Pediatrics',
+                'description' => 'Medical care for infants, children, and adolescents.',
+            ],
+        ];
+
+        foreach ($specialties as $specialty) {
+            Specialty::firstOrCreate(['name' => $specialty['name']], $specialty);
+        }
+
+        Specialty::factory()->count(5)->create();
     }
 }

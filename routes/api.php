@@ -6,6 +6,7 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\ExaminationController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -41,5 +42,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::patch('medicines/{medicine}/stock', [MedicineController::class, 'adjustStock'])
             ->name('medicines.adjustStock');
+
+        Route::post('prescriptions', [PrescriptionController::class, 'store'])
+            ->name('prescriptions.store');
     });
 });

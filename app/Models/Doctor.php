@@ -37,4 +37,9 @@ class Doctor extends Model
     {
         return $this->hasMany(Examination::class);
     }
+
+    public function prescriptions(): HasMany
+    {
+        return $this->hasMany(Prescription::class);
+    }
 }

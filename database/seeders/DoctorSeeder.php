@@ -15,10 +15,12 @@ class DoctorSeeder extends Seeder
     public function run(): void
     {
         $doctorUser = User::where('email', 'doctor@clinic.test')->first();
+        $specialty = Specialty::where('name', 'General Internal Medicine')->first();
+
         if ($doctorUser && ! Doctor::where('user_id', $doctorUser->id)->exists()) {
             Doctor::create([
                 'user_id' => $doctorUser->id,
-                'specialty_id' => Specialty::inRandomOrder()->first()?->id ?? Specialty::factory()->create()->id,
+                'specialty_id' => $specialty?->id ?? Specialty::first()?->id,
                 'license_number' => 'DOC-000001',
                 'bio' => 'Lead physician with over 10 years of clinical experience.',
             ]);
