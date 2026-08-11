@@ -2,6 +2,7 @@
 
 use App\Constants\Messages\ExceptionMessage;
 use App\Http\Middleware\EnsurePermission;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -10,7 +11,10 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Throwable;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -49,13 +53,32 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
-        $exceptions->render(function (AccessDeniedHttpException $e, Request $request) {
+        $exceptions->render(function (AccessDeniedHttpException|AuthorizationException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => ExceptionMessage::ACCESS_DENIED,
                     'errors' => [],
                 ], Response::HTTP_FORBIDDEN);
+            }
+        });
+
+        $exceptions->render(function (HttpException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                $statusCode = $e->getStatusCode();
+
+                $message = match ($statusCode) {
+                    Response::HTTP_FORBIDDEN => ExceptionMessage::ACCESS_DENIED,
+                    Response::HTTP_NOT_FOUND => ExceptionMessage::RESOURCE_NOT_FOUND,
+                    Response::HTTP_METHOD_NOT_ALLOWED => ExceptionMessage::METHOD_NOT_ALLOWED,
+                    default => $e->getMessage() ?: ExceptionMessage::UNEXPECTED_SERVER_ERROR,
+                };
+
+                return response()->json([
+                    'success' => false,
+                    'message' => $message,
+                    'errors' => [],
+                ], $statusCode);
             }
         });
 
@@ -69,7 +92,17 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
-        $exceptions->render(function (Exception $e, Request $request) {
+        $exceptions->render(function (MethodNotAllowedHttpException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => ExceptionMessage::METHOD_NOT_ALLOWED,
+                    'errors' => [],
+                ], Response::HTTP_METHOD_NOT_ALLOWED);
+            }
+        });
+
+        $exceptions->render(function (Throwable $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'success' => false,

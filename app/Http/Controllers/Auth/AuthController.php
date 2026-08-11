@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use App\Traits\HttpResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -16,7 +17,7 @@ class AuthController extends Controller
 {
     use HttpResponse;
 
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
         $validate = $request->validate([
             'email' => ['required', 'email'],
@@ -49,7 +50,7 @@ class AuthController extends Controller
         ], AuthMessage::LOGIN_SUCCESS);
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): JsonResponse
     {
         $token = $request->user()?->currentAccessToken();
 
@@ -63,7 +64,7 @@ class AuthController extends Controller
         );
     }
 
-    public function me(Request $request)
+    public function me(Request $request): JsonResponse
     {
         $user = $request->user()->load('role.permissions');
 
