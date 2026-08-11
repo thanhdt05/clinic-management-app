@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\PatientController;
 use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -25,5 +26,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::apiResource('specialties', SpecialtyController::class);
         Route::apiResource('doctors', DoctorController::class);
+        Route::apiResource('patients', PatientController::class);
     });
 });
