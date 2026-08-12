@@ -21,9 +21,13 @@ class Patient extends Model
         'address',
     ];
 
-    protected $casts = [
-        'date_of_birth' => 'date',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'date_of_birth' => 'date',
+        ];
+    }
+
 
     public function appointments(): HasMany
     {

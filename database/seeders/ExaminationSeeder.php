@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Appointment;
+use App\Models\Doctor;
 use App\Models\Examination;
 use Illuminate\Database\Seeder;
 
@@ -13,22 +14,25 @@ class ExaminationSeeder extends Seeder
      */
     public function run(): void
     {
-        // Lấy các lịch hẹn đã xác nhận hoặc hoàn thành và chưa có ca khám
-        $appointments = Appointment::query()
-            ->whereIn('status', ['confirmed', 'completed'])
-            ->doesntHave('examination')
-            ->get();
+        $doctor1 = Doctor::find(1);
+        $completedAppointment = Appointment::where('doctor_id', $doctor1?->id)
+            ->where('status', 'completed')
+            ->first();
 
-        foreach ($appointments as $appointment) {
-            Examination::factory()
-                ->recycle($appointment)
-                ->recycle($appointment->doctor)
-                ->recycle($appointment->patient)
-                ->create([
-                    'appointment_id' => $appointment->id,
-                    'doctor_id' => $appointment->doctor_id,
-                    'patient_id' => $appointment->patient_id,
-                ]);
+        if (! $doctor1 || ! $completedAppointment) {
+            return;
+        }
+
+        // Valid Examination without a prescription: Ready to test storing a prescription (POST /api/prescriptions)
+        if (! Examination::where('appointment_id', $completedAppointment->id)->exists()) {
+            Examination::create([
+                'appointment_id' => $completedAppointment->id,
+                'doctor_id' => $doctor1->id,
+                'patient_id' => $completedAppointment->patient_id,
+                'diagnosis' => 'Acute Gastritis',
+                'notes' => 'Epigastric tenderness reported after meal. Ready for prescription creation.',
+                'examined_at' => $completedAppointment->scheduled_at,
+            ]);
         }
     }
 }
