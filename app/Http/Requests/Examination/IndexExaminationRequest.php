@@ -28,7 +28,7 @@ class IndexExaminationRequest extends FormRequest
         return [
             'doctor_id' => ['nullable', 'integer', Rule::exists(Doctor::class, 'id')],
             'patient_id' => ['nullable', 'integer', Rule::exists(Patient::class, 'id')],
-            'per_page' => ['nullable', 'integer', 'max:100', 'min:1']
+            'per_page' => ['nullable', 'integer', 'max:100', 'min:1'],
         ];
     }
 

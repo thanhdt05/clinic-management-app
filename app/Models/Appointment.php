@@ -18,14 +18,13 @@ class Appointment extends Model
         'reason',
     ];
 
-
     protected function casts(): array
     {
         return [
             'scheduled_at' => 'datetime',
         ];
     }
-    
+
     public function patient()
     {
         return $this->belongsTo(Patient::class);

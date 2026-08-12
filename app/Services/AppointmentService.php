@@ -12,6 +12,7 @@ use Illuminate\Validation\ValidationException;
 class AppointmentService
 {
     private const int PER_PAGE = 10;
+
     private const int DEFAULT_DURATION_MINUTES = 30;
 
     public function getAll(?User $user = null, array $filter = []): LengthAwarePaginator
@@ -50,6 +51,8 @@ class AppointmentService
     public function create(array $data): Appointment
     {
         $this->checkDoctorAvailable($data['doctor_id'], $data['scheduled_at']);
+
+        $data['status'] = $data['status'] ?? 'scheduled';
 
         $appointment = Appointment::create($data);
 

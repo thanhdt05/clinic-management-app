@@ -1,6 +1,9 @@
 <?php
 
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 /*
@@ -15,7 +18,7 @@ use Tests\TestCase;
 */
 
 pest()->extend(TestCase::class)
- // ->use(RefreshDatabase::class)
+    ->use(RefreshDatabase::class)
     ->in('Feature');
 
 /*
@@ -44,7 +47,21 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function userWithRole(string $role, array $attributes = [])
 {
-    // ..
+    $role = Role::query()->where('name', $role)->firstOrFail();
+
+    return User::factory()->create(array_merge([
+        'role_id' => $role->id,
+        'is_active' => true,
+    ], $attributes));
+}
+
+function actingAsRole(string $role, array $attributes = [])
+{
+    $user = userWithRole($role, $attributes);
+
+    Sanctum::actingAs($user);
+
+    return $user;
 }

@@ -29,11 +29,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('specialties', SpecialtyController::class);
         Route::apiResource('doctors', DoctorController::class);
         Route::apiResource('patients', PatientController::class);
-        Route::apiResource('appointments', AppointmentController::class)->only(['index','store', 'show', 'update']);
+        Route::apiResource('appointments', AppointmentController::class)->only(['index', 'store', 'show', 'update']);
 
         Route::patch('appointments/{appointment}/status', [AppointmentController::class, 'updateStatus'])
             ->name('appointments.updateStatus');
 
-        Route::apiResource('examinations', ExaminationController::class)->only(['index','store', 'show', 'update']);
+        Route::apiResource('examinations', ExaminationController::class)->only(['index', 'store', 'show', 'update']);
     });
 });

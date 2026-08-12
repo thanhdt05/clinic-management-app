@@ -24,6 +24,7 @@ class SpecialtyService
     public function update(Specialty $specialty, array $data): Specialty
     {
         $specialty->update($data);
+
         return $specialty->refresh();
     }
 

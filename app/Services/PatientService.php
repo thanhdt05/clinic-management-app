@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Patient;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Str;
 
 class PatientService
 {
@@ -38,6 +37,7 @@ class PatientService
     public function update(Patient $patient, array $data): Patient
     {
         $patient->update($data);
+
         return $patient->refresh();
     }
 
@@ -49,7 +49,7 @@ class PatientService
     public function generateCode(): string
     {
         $number = Patient::withTrashed()->max('id') + 1;
-        $code = 'BN-' . str_pad($number, 6, '0', STR_PAD_LEFT);
+        $code = 'BN-'.str_pad($number, 6, '0', STR_PAD_LEFT);
 
         return $code;
     }

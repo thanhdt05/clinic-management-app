@@ -36,7 +36,7 @@ class UserSeeder extends Seeder
                 'name' => 'Receptionist',
                 'password' => Hash::make('12345678'),
                 'role_id' => $receptionistRole->id,
-                'is_active' => true
+                'is_active' => true,
             ]
         );
 
@@ -46,7 +46,7 @@ class UserSeeder extends Seeder
                 'name' => 'Doctor',
                 'password' => Hash::make('12345678'),
                 'role_id' => $doctorRole->id,
-                'is_active' => true
+                'is_active' => true,
             ]
         );
 
@@ -56,7 +56,7 @@ class UserSeeder extends Seeder
                 'name' => 'Pharmacist',
                 'password' => Hash::make('12345678'),
                 'role_id' => $pharmacistRole->id,
-                'is_active' => true
+                'is_active' => true,
             ]
         );
 
@@ -66,7 +66,7 @@ class UserSeeder extends Seeder
                 'name' => 'Cashier',
                 'password' => Hash::make('12345678'),
                 'role_id' => $cashierRole->id,
-                'is_active' => true
+                'is_active' => true,
             ]
         );
     }
