@@ -24,8 +24,8 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        DB::statement("ALTER TABLE medicines 
-        ADD CONSTRAINT chk_stock CHECK (stock >= 0)");
+        DB::statement('ALTER TABLE medicines 
+        ADD CONSTRAINT chk_stock CHECK (stock >= 0)');
     }
 
     /**

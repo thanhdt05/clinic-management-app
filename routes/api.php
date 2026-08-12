@@ -43,6 +43,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('medicines/{medicine}/stock', [MedicineController::class, 'adjustStock'])
             ->name('medicines.adjustStock');
 
+        Route::get('prescriptions', [PrescriptionController::class, 'index'])
+            ->name('prescriptions.index');
+
         Route::post('prescriptions', [PrescriptionController::class, 'store'])
             ->name('prescriptions.store');
 

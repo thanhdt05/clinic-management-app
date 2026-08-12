@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Constants\Messages\PrescriptionMessage;
 use App\Http\Requests\Prescription\AddPrescriptionItemRequest;
+use App\Http\Requests\Prescription\IndexPrescriptionRequest;
 use App\Http\Requests\Prescription\StorePrescriptionRequest;
 use App\Http\Requests\Prescription\UpdatePrescriptionItemRequest;
 use App\Http\Resources\PrescriptionResource;
@@ -22,6 +23,20 @@ class PrescriptionController extends Controller
     public function __construct(
         private readonly PrescriptionService $prescriptionService,
     ) {}
+
+    public function index(IndexPrescriptionRequest $request): JsonResponse
+    {
+        $prescriptions = $this->prescriptionService->getAll(
+            $request->user(),
+            $request->validated(),
+        );
+
+        return $this->paginated(
+            PrescriptionResource::collection($prescriptions),
+            $prescriptions,
+            PrescriptionMessage::PRESCRIPTION_LIST_RETRIEVED,
+        );
+    }
 
     public function store(StorePrescriptionRequest $request): JsonResponse
     {

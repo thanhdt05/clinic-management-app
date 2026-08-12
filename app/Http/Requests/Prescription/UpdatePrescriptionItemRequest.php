@@ -29,7 +29,8 @@ class UpdatePrescriptionItemRequest extends FormRequest
         ];
     }
 
-    public function messages() {
+    public function messages()
+    {
         return [
             'quantity.required' => 'The quantity field is required.',
             'quantity.integer' => 'The quantity must be an integer.',
@@ -42,7 +43,8 @@ class UpdatePrescriptionItemRequest extends FormRequest
         ];
     }
 
-    public function attributes() {
+    public function attributes()
+    {
         return [
             'quantity' => 'Quantity',
             'dosage' => 'Dosage',
