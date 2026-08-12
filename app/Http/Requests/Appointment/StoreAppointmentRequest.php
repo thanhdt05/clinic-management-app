@@ -28,7 +28,7 @@ class StoreAppointmentRequest extends FormRequest
         return [
             'patient_id' => ['required', 'integer', Rule::exists(Patient::class, 'id')->whereNull('deleted_at')],
             'doctor_id' => ['required', 'integer', Rule::exists(Doctor::class, 'id')],
-            'scheduled_at' => ['required', 'date', 'after_or_equal:today'],
+            'scheduled_at' => ['required', 'date', 'after:now'],
             'reason' => ['nullable', 'string'],
         ];
     }
@@ -47,7 +47,7 @@ class StoreAppointmentRequest extends FormRequest
 
             'scheduled_at.required' => 'The scheduled time field is required.',
             'scheduled_at.date' => 'The scheduled time must be a valid date.',
-            'scheduled_at.after_or_equal' => 'The scheduled time must be today or a future date.',
+            'scheduled_at.after' => 'The scheduled time must be after the current date and time.',
 
             'reason.string' => 'The reason field must be a string.',
         ];
