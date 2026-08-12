@@ -45,5 +45,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('prescriptions', [PrescriptionController::class, 'store'])
             ->name('prescriptions.store');
+
+        Route::post('prescriptions/{prescription}/items', [PrescriptionController::class, 'addItem'])
+            ->name('prescriptions.items.store');
+
+        Route::put('prescriptions/{prescription}/items/{prescriptionItem}', [PrescriptionController::class, 'updateItem'])
+            ->name('prescriptions.items.update');
+
+        Route::delete('prescriptions/{prescription}/items/{prescriptionItem}', [PrescriptionController::class, 'removeItem'])
+            ->name('prescriptions.items.destroy');
     });
 });
