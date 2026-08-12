@@ -35,7 +35,7 @@ class PrescriptionResource extends JsonResource
             'notes' => $this->notes,
 
             'items' => $this->items->map(
-                fn($item) => [
+                fn ($item) => [
                     'id' => $item->id,
 
                     'medicine' => [

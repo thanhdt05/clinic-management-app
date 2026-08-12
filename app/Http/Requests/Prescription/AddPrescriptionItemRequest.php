@@ -32,7 +32,7 @@ class AddPrescriptionItemRequest extends FormRequest
                 Rule::unique('prescription_items', 'medicine_id')
                     ->where(function ($query) use ($prescription) {
                         return $query->where('prescription_id', $prescription->id);
-                    })
+                    }),
             ],
             'quantity' => ['required', 'integer', 'min:1'],
             'dosage' => ['required', 'string', 'max:255'],
@@ -40,7 +40,8 @@ class AddPrescriptionItemRequest extends FormRequest
         ];
     }
 
-    public function messages(){
+    public function messages()
+    {
         return [
             'medicine_id.required' => 'The medicine field is required.',
             'medicine_id.exists' => 'The medicine does not exist.',
@@ -57,7 +58,8 @@ class AddPrescriptionItemRequest extends FormRequest
         ];
     }
 
-    public function attributes() {
+    public function attributes()
+    {
         return [
             'medicine_id' => 'Medicine',
             'quantity' => 'Quantity',

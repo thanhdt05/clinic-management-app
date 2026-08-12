@@ -24,8 +24,8 @@ return new class extends Migration
             $table->unique(['prescription_id', 'medicine_id']);
         });
 
-        DB::statement("ALTER TABLE prescription_items
-        ADD CONSTRAINT chk_quantity CHECK (quantity > 0)");
+        DB::statement('ALTER TABLE prescription_items
+        ADD CONSTRAINT chk_quantity CHECK (quantity > 0)');
     }
 
     /**
