@@ -16,6 +16,9 @@ class EnsurePermission
         'update' => 'UPDATE',
         'destroy' => 'DELETE',
         'adjustStock' => 'ADJUSTSTOCK',
+        'addItem' => 'ADDITEM',
+        'updateItem' => 'UPDATEITEM',
+        'removeItem' => 'REMOVEITEM',
     ];
 
     /**
