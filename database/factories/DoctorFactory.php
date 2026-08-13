@@ -20,6 +20,9 @@ class DoctorFactory extends Factory
      */
     public function definition(): array
     {
+        static $sequence = 1000;
+        $sequence++;
+
         return [
             'user_id' => User::factory()->state(function () {
                 $doctorRole = Role::where('name', 'DOCTOR')->first() ?? Role::first();
@@ -27,7 +30,7 @@ class DoctorFactory extends Factory
                 return ['role_id' => $doctorRole?->id];
             }),
             'specialty_id' => Specialty::factory(),
-            'license_number' => 'DOC-'.$this->faker->unique()->numerify('######'),
+            'license_number' => sprintf('DOC-%06d', $sequence),
             'bio' => $this->faker->paragraph(),
         ];
     }

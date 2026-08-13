@@ -4,6 +4,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\ExaminationController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PrescriptionController;
@@ -57,5 +58,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::delete('prescriptions/{prescription}/items/{prescriptionItem}', [PrescriptionController::class, 'removeItem'])
             ->name('prescriptions.items.destroy');
+
+        Route::apiResource('invoices', InvoiceController::class)->only(['index', 'store', 'show', 'update']);
+
+        Route::patch('invoices/{invoice}/status', [InvoiceController::class, 'updateStatus'])
+            ->name('invoices.updateStatus');
     });
 });

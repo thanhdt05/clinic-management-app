@@ -43,4 +43,9 @@ class Examination extends Model
     {
         return $this->hasOne(Prescription::class);
     }
+
+    public function invoice(): HasOne
+    {
+        return $this->hasOne(Invoice::class);
+    }
 }
