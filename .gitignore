@@ -3,9 +3,11 @@
 .env
 .env.backup
 .env.production
+.env*.local
 .phpactor.json
 .phpunit.result.cache
 /.agents/
+/.ai/
 /.claude/
 /.codex
 AGENTS.md
@@ -19,6 +21,10 @@ AGENTS.md
 /.zed
 /auth.json
 /node_modules
+/frontend/node_modules
+/frontend/dist
+/frontend/.env
+/frontend/.env*.local
 /public/build
 /public/fonts-manifest.dev.json
 /public/hot
@@ -30,3 +36,4 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
