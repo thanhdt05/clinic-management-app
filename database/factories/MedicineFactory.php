@@ -17,8 +17,11 @@ class MedicineFactory extends Factory
      */
     public function definition(): array
     {
+        static $sequence = 100;
+        $sequence++;
+
         return [
-            'code' => $this->faker->unique()->numerify('MED-####'),
+            'code' => sprintf('MED-%04d', $sequence),
             'name' => $this->faker->name,
             'unit' => $this->faker->randomElement(['bottle', 'box', 'strip']),
             'price' => $this->faker->numberBetween(1000, 1000000),
