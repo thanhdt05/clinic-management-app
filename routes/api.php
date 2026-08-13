@@ -7,6 +7,7 @@ use App\Http\Controllers\ExaminationController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\UserController;
@@ -63,5 +64,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::patch('invoices/{invoice}/status', [InvoiceController::class, 'updateStatus'])
             ->name('invoices.updateStatus');
+
+        Route::get('invoices/{invoice}/payments', [PaymentController::class, 'index'])
+            ->name('invoices.payments.index');
+
+        Route::post('invoices/{invoice}/payments', [PaymentController::class, 'store'])
+            ->name('invoices.payments.store');
+
+        Route::post('payments/{payment}/capture', [PaymentController::class, 'capture'])
+            ->name('payments.capture');
     });
 });

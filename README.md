@@ -108,3 +108,59 @@ docker compose exec app php artisan migrate --seed
 ### 4. Access the Application
 All APIs are served at:
 `http://localhost:8000/api`
+
+## PayPal Integration & Security Guidelines
+
+> [!WARNING]
+> **SANDBOX MODE ONLY - DO NOT USE REAL MONEY OR PRODUCTION CREDENTIALS**
+> This application is configured exclusively for PayPal Sandbox development. Never commit production API keys or real credit card information to the repository.
+
+### Security Guidelines (Credential Protection)
+
+- All PayPal API credentials (`PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`) must be stored strictly inside your local `.env` file.
+- Do not commit your `.env` file to version control. The `.gitignore` file is configured to exclude `.env`.
+- The `.env.example` template provides placeholder values for developer setup.
+
+---
+
+### Step-by-Step PayPal Sandbox Setup
+
+#### 1. Create a PayPal Developer App
+
+1. Go to the [PayPal Developer Dashboard](https://developer.paypal.com/).
+2. Log in or create a developer account.
+3. In the sidebar under **Sandbox**, navigate to **Apps & Credentials**.
+4. Click **Create App**.
+5. Set the app type to **Merchant** or **Platform**, enter an app name, and select your sandbox business account.
+6. Copy the generated **Client ID** and **Secret** into your local `.env` file:
+   ```env
+   PAYPAL_MODE=sandbox
+   PAYPAL_CLIENT_ID=your-sandbox-client-id
+   PAYPAL_CLIENT_SECRET=your-sandbox-client-secret
+   PAYPAL_CURRENCY=USD
+   ```
+
+#### 2. Create Sandbox Accounts & Visa Test Cards
+
+1. In the PayPal Developer Dashboard sidebar, go to **Testing Tools > Sandbox Accounts**.
+2. Click **Create Account** to generate a Personal (Buyer) account or use the default sandbox buyer account.
+3. To test Visa card payments (`method = "visa"`):
+   - Open the returned `approval_url` on the PayPal hosted checkout page and select **Pay with Debit or Credit Card** (Visa).
+   - Alternatively, generate test card numbers under **Testing Tools > Credit Card Generator** in the PayPal Developer Dashboard.
+   - **Do NOT use real credit card numbers under any circumstances.**
+
+---
+
+### Payment API Workflow (PayPal & Visa)
+
+1. **Create Payment (`POST /api/invoices/{invoice}/payments`)**:
+   - Accepts `method = "paypal"` or `method = "visa"`.
+   - Generates a PayPal Order and returns an `approval_url` along with `order_id` and a `pending` payment record.
+2. **Approve Payment (Browser Authorization)**:
+   - Copy the returned `approval_url` and paste it into a web browser.
+   - Log in using any **PayPal Sandbox Personal (Buyer) account** *(do NOT use the developer/merchant account that created the app)*.
+   - Choose your preferred payment method (PayPal balance or Debit/Credit Card / Visa) and click **Pay Now** / **Approve**.
+   - > [!NOTE]
+   - > **PayPal Sandbox UI Behavior:** The PayPal Sandbox Web UI may display browser console warnings (such as CORS or CSP telemetry errors) or fail to redirect automatically after approval. This is an expected behavior of the PayPal Sandbox web interface and does not impact backend API processing. Once you click approve on PayPal, proceed directly to Postman to execute the Capture request.
+3. **Capture Payment (`POST /api/payments/{payment}/capture`)**:
+   - Captures the authorized PayPal transaction, marks the payment as `completed`, records `provider_capture_id`, and automatically updates the Invoice status to `paid` once the remaining total is settled.
