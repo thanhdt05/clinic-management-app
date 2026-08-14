@@ -1,7 +1,5 @@
 <template>
-  <div class="min-h-screen bg-slate-50 p-4">
-    <RouterView />
-  </div>
+  <RouterView />
 </template>
 
 <script setup lang="ts">
