@@ -9,6 +9,7 @@ use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -25,6 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('me', [AuthController::class, 'me']);
 
     Route::middleware('permission')->group(function () {
+        Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
         Route::apiResource('users', UserController::class);
 
         Route::patch('users/{user}/status', [UserController::class, 'updateStatus'])
