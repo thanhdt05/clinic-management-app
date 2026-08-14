@@ -1,10 +1,50 @@
-<script setup>
+<script setup lang="ts">
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
+
+import axios from 'axios'
 import { ref } from 'vue';
 
-const email = ref('');
-const password = ref('');
-const checked = ref(false);
+import {useRoute, useRouter,} from 'vue-router'
+
+import { useAuthStore } from '@/stores/auth'
+import type { ApiErrorResponse } from '@/types/auth';
+
+const auth = useAuthStore()
+
+const route = useRoute()
+const router = useRouter()
+
+const email = ref('')
+const password = ref('')
+const checked = ref(false)
+
+const loading = ref(false)
+const errorMessage = ref('')
+
+async function submit() {
+    loading.value = true
+    errorMessage.value = ''
+
+    try {
+        await auth.login({
+            email: email.value,
+            password: password.value
+        })
+
+        const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
+
+        await router.replace(redirect)
+    } catch (error) {
+        if (axios.isAxiosError<ApiErrorResponse>(error)) {
+            errorMessage.value = error.response?.data?.message ?? 'Login failed.'
+        } else {
+            errorMessage.value = 'Login failed.'
+        }
+    } finally {
+        loading.value = false
+    }
+}
+
 </script>
 
 <template>
@@ -31,16 +71,16 @@ const checked = ref(false);
                             />
                         </g>
                     </svg>
-                    <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Welcome to PrimeLand!</div>
-                    <span class="text-muted-color font-medium">Sign in to continue</span>
+                    <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Welcome to Clinic Management!</div>
+                    <span class="text-muted-color font-medium">Sign in to continue to the system</span>
                 </div>
 
-                <div>
-                    <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Email</label>
-                    <InputText id="email1" type="text" placeholder="Email address" class="w-full md:w-[30rem] mb-8" v-model="email" />
+                <form @submit.prevent="submit">
+                    <label for="email" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Email</label>
+                    <InputText id="email" v-model="email" type="email" placeholder="Email address" class="w-full md:w-[30rem] mb-8" autocomplete="email" />
 
-                    <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
-                    <Password id="password1" v-model="password" placeholder="Password" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
+                    <label for="password" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
+                    <Password id="password" v-model="password" placeholder="Password" :toggleMask="true" class="mb-4" fluid :feedback="false" autocomplete="current-password"></Password>
 
                     <div class="flex items-center justify-between mt-2 mb-8 gap-8">
                         <div class="flex items-center">
@@ -49,11 +89,17 @@ const checked = ref(false);
                         </div>
                         <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
                     </div>
-                    <Button label="Sign In" class="w-full" as="router-link" to="/"></Button>
-                </div>
+
+                    <Message v-if="errorMessage" severity="error" class="mt-4">
+                        {{ errorMessage }}
+                    </Message>
+
+                    <Button type="submit" label="Sign In" class="w-full" :loading="loading" :disabled="loading"></Button>
+                </form>
             </div>
         </div>
     </div>
+</div>
 </template>
 
 <style scoped>
