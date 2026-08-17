@@ -28,8 +28,8 @@ class UpdatePatientRequest extends FormRequest
             'gender' => ['sometimes', Rule::in(['male', 'female', 'other'])],
             'date_of_birth' => ['sometimes', 'date', 'before_or_equal:today'],
             'phone' => ['sometimes', 'string', 'max:15'],
-            'email' => ['sometimes', 'email', 'max:255'],
-            'address' => ['sometimes', 'string', 'max:255'],
+            'email' => ['sometimes', 'nullable', 'email', 'max:255'],
+            'address' => ['sometimes', 'nullable', 'string', 'max:255'],
         ];
     }
 

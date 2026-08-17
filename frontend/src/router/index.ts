@@ -40,7 +40,7 @@ const router = createRouter({
         {
           path: 'patients',
           name: 'patients',
-          component: () => import('@/views/ModulePlaceholder.vue'),
+          component: () => import('@/views/patients/Patients.vue'),
 
           props: {
             title: 'Patients',
@@ -96,7 +96,7 @@ const router = createRouter({
         {
           path: 'specialties',
           name: 'specialties',
-          component: () => import('@/views/ModulePlaceholder.vue'),
+          component: () => import('@/views/specialties/Specialties.vue'),
 
           props: {
             title: 'Specialties',
@@ -110,7 +110,7 @@ const router = createRouter({
         {
           path: 'doctors',
           name: 'doctors',
-          component: () => import('@/views/ModulePlaceholder.vue'),
+          component: () => import('@/views/doctors/Doctors.vue'),
 
           props: {
             title: 'Doctors',
