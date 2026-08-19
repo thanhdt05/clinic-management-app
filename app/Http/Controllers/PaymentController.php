@@ -21,9 +21,8 @@ class PaymentController extends Controller
         private readonly PaymentService $paymentService
     ) {}
 
-    public function index(Request $request): JsonResponse
-    {
-        $payments = $this->paymentService->getAll($request->all());
+    public function index(Request $request, Invoice $invoice): JsonResponse {
+        $payments = $this->paymentService->getAll($invoice, $request->all());
 
         return $this->paginated(
             PaymentResource::collection($payments),

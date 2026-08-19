@@ -82,7 +82,7 @@ const router = createRouter({
         {
           path: 'prescriptions',
           name: 'prescriptions',
-          component: () => import('@/views/ModulePlaceholder.vue'),
+          component: () => import('@/views/prescriptions/Prescriptions.vue'),
 
           props: {
             title: 'Prescriptions',
@@ -138,7 +138,7 @@ const router = createRouter({
         {
           path: 'invoices',
           name: 'invoices',
-          component: () => import('@/views/ModulePlaceholder.vue'),
+          component: () => import('@/views/invoices/Invoices.vue'),
 
           props: {
             title: 'Invoices',

@@ -53,10 +53,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('prescriptions', [PrescriptionController::class, 'store'])
             ->name('prescriptions.store');
 
+        Route::get('prescriptions/{prescription}', [PrescriptionController::class, 'show'])
+            ->name('prescriptions.show');
+
+        Route::match(['put', 'patch'], 'prescriptions/{prescription}', [PrescriptionController::class, 'update'])
+            ->name('prescriptions.update');
+
         Route::post('prescriptions/{prescription}/items', [PrescriptionController::class, 'addItem'])
             ->name('prescriptions.items.store');
 
-        Route::put('prescriptions/{prescription}/items/{prescriptionItem}', [PrescriptionController::class, 'updateItem'])
+        Route::match(['put', 'patch'], 'prescriptions/{prescription}/items/{prescriptionItem}', [PrescriptionController::class, 'updateItem'])
             ->name('prescriptions.items.update');
 
         Route::delete('prescriptions/{prescription}/items/{prescriptionItem}', [PrescriptionController::class, 'removeItem'])
