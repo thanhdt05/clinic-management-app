@@ -7,6 +7,7 @@ use App\Http\Requests\Prescription\AddPrescriptionItemRequest;
 use App\Http\Requests\Prescription\IndexPrescriptionRequest;
 use App\Http\Requests\Prescription\StorePrescriptionRequest;
 use App\Http\Requests\Prescription\UpdatePrescriptionItemRequest;
+use App\Http\Requests\Prescription\UpdatePrescriptionRequest;
 use App\Http\Resources\PrescriptionResource;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
@@ -38,6 +39,19 @@ class PrescriptionController extends Controller
         );
     }
 
+    public function show(Request $request, Prescription $prescription): JsonResponse
+    {
+        $prescription = $this->prescriptionService->getDetail(
+            $request->user(),
+            $prescription,
+        );
+
+        return $this->success(
+            PrescriptionResource::make($prescription),
+            PrescriptionMessage::PRESCRIPTION_DETAILS_RETRIEVED,
+        );
+    }
+
     public function store(StorePrescriptionRequest $request): JsonResponse
     {
         $prescription = $this->prescriptionService->store(
@@ -49,6 +63,20 @@ class PrescriptionController extends Controller
             PrescriptionResource::make($prescription),
             PrescriptionMessage::PRESCRIPTION_CREATED,
             Response::HTTP_CREATED
+        );
+    }
+
+    public function update(UpdatePrescriptionRequest $request, Prescription $prescription): JsonResponse
+    {
+        $prescription = $this->prescriptionService->update(
+            $request->user(),
+            $prescription,
+            $request->validated(),
+        );
+
+        return $this->success(
+            PrescriptionResource::make($prescription),
+            PrescriptionMessage::PRESCRIPTION_UPDATED,
         );
     }
 

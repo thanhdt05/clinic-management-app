@@ -18,11 +18,13 @@ class PaymentService
         private readonly PayPalService $paypalService
     ) {}
 
-    public function getAll(array $data): LengthAwarePaginator
+    public function getAll(Invoice $invoice, array $data): LengthAwarePaginator
     {
-        $query = Payment::query()->latest();
-
-        return $query->paginate($data['per_page'] ?? self::PER_PAGE);
+        return $invoice->payments()
+            ->latest()
+            ->paginate(
+            $data['per_page'] ?? self::PER_PAGE
+        );
     }
 
     public function create(Invoice $invoice, array $data)
@@ -42,7 +44,10 @@ class PaymentService
             ]);
         }
 
-        $paypalOrder = $this->paypalService->createOrder($amount);
+        $exchangeRate = (float) config('clinic.vnd_to_usd_rate', 25000);
+        $usdAmount = max(round($amount / $exchangeRate, 2), 0.01);
+
+        $paypalOrder = $this->paypalService->createOrder($usdAmount);
 
         if (empty($paypalOrder['order_id'])) {
             throw ValidationException::withMessages([
@@ -126,7 +131,7 @@ class PaymentService
     public function getRemainingAmount(Invoice $invoice): float
     {
         $paidAmount = (float) $invoice->payments()
-            ->whereIn('status', ['completed', 'pending'])
+            ->where('status', 'completed')
             ->sum('amount');
 
         return max(round((float) $invoice->total - $paidAmount, 2), 0.00);

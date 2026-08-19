@@ -38,6 +38,37 @@ class PrescriptionService
         return $query->paginate($filters['per_page'] ?? self::PER_PAGE);
     }
 
+    public function getDetail(User $user, Prescription $prescription): Prescription
+    {
+        if ($user->doctor && $user->doctor->id !== $prescription->doctor_id) {
+            abort(
+                Response::HTTP_FORBIDDEN,
+                PrescriptionMessage::UNAUTHORIZED_PRESCRIPTION
+            );
+        }
+
+        return $prescription->load([
+            'examination.patient',
+            'doctor.user',
+            'items.medicine',
+        ]);
+    }
+
+    public function update(User $user, Prescription $prescription, array $data): Prescription
+    {
+        $this->enforceDoctorOwnership($user, $prescription);
+
+        $prescription->update([
+            'notes' => $data['notes'] ?? null,
+        ]);
+
+        return $prescription->load([
+            'examination.patient',
+            'doctor.user',
+            'items.medicine',
+        ]);
+    }
+
     public function store(User $user, array $data): Prescription
     {
         return DB::transaction(function () use ($user, $data) {
