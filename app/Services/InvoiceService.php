@@ -2,10 +2,13 @@
 
 namespace App\Services;
 
+use App\Constants\ActivityAction;
 use App\Constants\Messages\InvoiceMessage;
+use App\Events\ActivityLogged;
 use App\Models\Examination;
 use App\Models\Invoice;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class InvoiceService
@@ -64,10 +67,19 @@ class InvoiceService
             'issued_at' => now(),
         ]);
 
-        return $invoice->load([
+        $loadedInvoice = $invoice->load([
             'examination.patient',
             'examination.prescription.items.medicine',
         ]);
+
+        ActivityLogged::dispatch(
+            ActivityAction::INVOICE_CREATED,
+            $loadedInvoice,
+            Auth::user(),
+            ['invoice_code' => $loadedInvoice->invoice_code, 'total' => $loadedInvoice->total]
+        );
+
+        return $loadedInvoice;
     }
 
     public function getDetail(Invoice $invoice): Invoice
@@ -99,26 +111,54 @@ class InvoiceService
             'total' => $total,
         ]);
 
-        return $invoice->refresh()->load([
+        $loadedInvoice = $invoice->refresh()->load([
             'examination.patient',
             'examination.doctor.user',
             'examination.prescription.items.medicine',
         ]);
+
+        ActivityLogged::dispatch(
+            ActivityAction::INVOICE_UPDATED,
+            $loadedInvoice,
+            Auth::user(),
+            [
+                'invoice_code' => $loadedInvoice->invoice_code,
+                'discount' => $loadedInvoice->discount,
+                'total' => $loadedInvoice->total,
+            ]
+        );
+
+        return $loadedInvoice;
     }
 
     public function updateStatus(Invoice $invoice, string $status): Invoice
     {
         $this->ensureInvoiceEditable($invoice);
 
+        $oldStatus = $invoice->status;
+
         $invoice->update([
             'status' => $status,
         ]);
 
-        return $invoice->refresh()->load([
+        $loadedInvoice = $invoice->refresh()->load([
             'examination.patient',
             'examination.doctor.user',
             'examination.prescription.items.medicine',
         ]);
+
+        ActivityLogged::dispatch(
+            ActivityAction::INVOICE_STATUS_CHANGED,
+            $loadedInvoice,
+            Auth::user(),
+            [
+                'invoice_code' => $loadedInvoice->invoice_code,
+                'old_status' => $oldStatus,
+                'new_status' => $loadedInvoice->status,
+            ]
+        );
+
+        return $loadedInvoice;
     }
 
     private function calculateMedicineTotal(Examination $examination): float

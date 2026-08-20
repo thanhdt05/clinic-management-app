@@ -2,11 +2,14 @@
 
 namespace App\Services;
 
+use App\Constants\ActivityAction;
 use App\Constants\Messages\AppointmentMessage;
+use App\Events\ActivityLogged;
 use App\Models\Appointment;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class AppointmentService
@@ -56,11 +59,24 @@ class AppointmentService
 
         $appointment = Appointment::create($data);
 
-        return $appointment->load([
+        $loadedAppointment = $appointment->load([
             'patient',
             'doctor.user',
             'doctor.specialty',
         ]);
+
+        ActivityLogged::dispatch(
+            ActivityAction::APPOINTMENT_CREATED,
+            $loadedAppointment,
+            Auth::user(),
+            [
+                'doctor_id' => $loadedAppointment->doctor_id,
+                'patient_id' => $loadedAppointment->patient_id,
+                'scheduled_at' => $loadedAppointment->scheduled_at,
+            ]
+        );
+
+        return $loadedAppointment;
     }
 
     public function getDetail(Appointment $appointment): Appointment
@@ -86,11 +102,20 @@ class AppointmentService
 
         $appointment->update($data);
 
-        return $appointment->load([
+        $loadedAppointment = $appointment->refresh()->load([
             'patient',
             'doctor.user',
             'doctor.specialty',
         ]);
+
+        ActivityLogged::dispatch(
+            ActivityAction::APPOINTMENT_UPDATED,
+            $loadedAppointment,
+            Auth::user(),
+            ['updated_fields' => array_keys($data)]
+        );
+
+        return $loadedAppointment;
     }
 
     public function updateStatus(Appointment $appointment, string $status): Appointment
@@ -108,13 +133,23 @@ class AppointmentService
             ]);
         }
 
+        $oldStatus = $appointment->status;
         $appointment->update(['status' => $status]);
 
-        return $appointment->refresh()->load([
+        $updatedAppointment = $appointment->refresh()->load([
             'patient',
             'doctor.user',
             'doctor.specialty',
         ]);
+
+        ActivityLogged::dispatch(
+            ActivityAction::APPOINTMENT_STATUS_CHANGED,
+            $updatedAppointment,
+            Auth::user(),
+            ['old_status' => $oldStatus, 'new_status' => $status]
+        );
+
+        return $updatedAppointment;
     }
 
     public function checkDoctorAvailable(?int $doctorId, string $scheduledAt, ?int $currentAppointmentId = null): void

@@ -2,10 +2,13 @@
 
 namespace App\Services;
 
+use App\Constants\ActivityAction;
 use App\Constants\Messages\DoctorMessage;
+use App\Events\ActivityLogged;
 use App\Models\Doctor;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class DoctorService
@@ -26,7 +29,20 @@ class DoctorService
 
         $doctor = Doctor::create($data);
 
-        return $doctor->load(['user', 'specialty']);
+        $loadedDoctor = $doctor->load(['user', 'specialty']);
+
+        ActivityLogged::dispatch(
+            ActivityAction::DOCTOR_CREATED,
+            $loadedDoctor,
+            Auth::user(),
+            [
+                'user_id' => $loadedDoctor->user_id,
+                'specialty_id' => $loadedDoctor->specialty_id,
+                'license_number' => $loadedDoctor->license_number,
+            ]
+        );
+
+        return $loadedDoctor;
     }
 
     public function update(Doctor $doctor, array $data): Doctor
@@ -37,11 +53,30 @@ class DoctorService
 
         $doctor->update($data);
 
-        return $doctor->refresh()->load(['user', 'specialty']);
+        $loadedDoctor = $doctor->refresh()->load(['user', 'specialty']);
+
+        ActivityLogged::dispatch(
+            ActivityAction::DOCTOR_UPDATED,
+            $loadedDoctor,
+            Auth::user(),
+            ['updated_fields' => array_keys($data)]
+        );
+
+        return $loadedDoctor;
     }
 
     public function delete(Doctor $doctor): void
     {
+        ActivityLogged::dispatch(
+            ActivityAction::DOCTOR_DELETED,
+            $doctor,
+            Auth::user(),
+            [
+                'user_id' => $doctor->user_id,
+                'license_number' => $doctor->license_number,
+            ]
+        );
+
         $doctor->delete();
     }
 

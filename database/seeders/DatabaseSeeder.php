@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             AppointmentSeeder::class,
             ExaminationSeeder::class,
             InvoiceSeeder::class,
+            DemoFlowSeeder::class,
         ]);
     }
 }
