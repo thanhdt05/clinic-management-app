@@ -11,6 +11,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SpecialtyController;
+use App\Http\Controllers\StatsController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -81,5 +82,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('payments/{payment}/capture', [PaymentController::class, 'capture'])
             ->name('payments.capture');
+
+        Route::get('stats', [StatsController::class, 'show'])
+            ->name('stats.show');
     });
 });

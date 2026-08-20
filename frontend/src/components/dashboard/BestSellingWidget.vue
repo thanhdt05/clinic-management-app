@@ -1,96 +1,127 @@
-<script setup>
-import { ref } from 'vue';
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import type { TopDoctor, TopPrescribedMedicine } from '@/types/stats'
 
-const menu = ref(null);
+const props = defineProps<{
+  topMedicines?: TopPrescribedMedicine[]
+  topDoctors?: TopDoctor[]
+  loading?: boolean
+}>()
 
-const items = ref([
-    { label: 'Add New', icon: 'pi pi-fw pi-plus' },
-    { label: 'Remove', icon: 'pi pi-fw pi-trash' }
-]);
+const activeTab = ref<'medicines' | 'doctors'>('medicines')
+
+const maxMedicineQuantity = computed(() => {
+  if (!props.topMedicines || props.topMedicines.length === 0) return 1
+  return Math.max(...props.topMedicines.map((m) => Number(m.total_prescribed)), 1)
+})
+
+const maxDoctorCount = computed(() => {
+  if (!props.topDoctors || props.topDoctors.length === 0) return 1
+  return Math.max(...props.topDoctors.map((d) => Number(d.examination_count)), 1)
+})
+
+const colors = ['bg-orange-500', 'bg-cyan-500', 'bg-pink-500', 'bg-green-500', 'bg-purple-500']
+const textColors = ['text-orange-500', 'text-cyan-500', 'text-pink-500', 'text-green-500', 'text-purple-500']
 </script>
 
 <template>
-    <div class="card">
-        <div class="flex justify-between items-center mb-6">
-            <div class="font-semibold text-xl">Best Selling Products</div>
-            <div>
-                <Button icon="pi pi-ellipsis-v" class="p-button-text p-button-plain p-button-rounded" @click="$refs.menu.toggle($event)"></Button>
-                <Menu ref="menu" popup :model="items" class="min-w-40!"></Menu>
-            </div>
-        </div>
-        <ul class="list-none p-0 m-0">
-            <li class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                <div>
-                    <span class="text-surface-900 dark:text-surface-0 font-medium mr-2 mb-1 md:mb-0">Space T-Shirt</span>
-                    <div class="mt-1 text-muted-color">Clothing</div>
-                </div>
-                <div class="mt-2 md:mt-0 flex items-center">
-                    <div class="bg-surface-300 dark:bg-surface-500 rounded-border overflow-hidden w-40 lg:w-24" style="height: 8px">
-                        <div class="bg-orange-500 h-full" style="width: 50%"></div>
-                    </div>
-                    <span class="text-orange-500 ml-4 font-medium">%50</span>
-                </div>
-            </li>
-            <li class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                <div>
-                    <span class="text-surface-900 dark:text-surface-0 font-medium mr-2 mb-1 md:mb-0">Portal Sticker</span>
-                    <div class="mt-1 text-muted-color">Accessories</div>
-                </div>
-                <div class="mt-2 md:mt-0 ml-0 md:ml-20 flex items-center">
-                    <div class="bg-surface-300 dark:bg-surface-500 rounded-border overflow-hidden w-40 lg:w-24" style="height: 8px">
-                        <div class="bg-cyan-500 h-full" style="width: 16%"></div>
-                    </div>
-                    <span class="text-cyan-500 ml-4 font-medium">%16</span>
-                </div>
-            </li>
-            <li class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                <div>
-                    <span class="text-surface-900 dark:text-surface-0 font-medium mr-2 mb-1 md:mb-0">Supernova Sticker</span>
-                    <div class="mt-1 text-muted-color">Accessories</div>
-                </div>
-                <div class="mt-2 md:mt-0 ml-0 md:ml-20 flex items-center">
-                    <div class="bg-surface-300 dark:bg-surface-500 rounded-border overflow-hidden w-40 lg:w-24" style="height: 8px">
-                        <div class="bg-pink-500 h-full" style="width: 67%"></div>
-                    </div>
-                    <span class="text-pink-500 ml-4 font-medium">%67</span>
-                </div>
-            </li>
-            <li class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                <div>
-                    <span class="text-surface-900 dark:text-surface-0 font-medium mr-2 mb-1 md:mb-0">Wonders Notebook</span>
-                    <div class="mt-1 text-muted-color">Office</div>
-                </div>
-                <div class="mt-2 md:mt-0 ml-0 md:ml-20 flex items-center">
-                    <div class="bg-surface-300 dark:bg-surface-500 rounded-border overflow-hidden w-40 lg:w-24" style="height: 8px">
-                        <div class="bg-green-500 h-full" style="width: 35%"></div>
-                    </div>
-                    <span class="text-primary ml-4 font-medium">%35</span>
-                </div>
-            </li>
-            <li class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                <div>
-                    <span class="text-surface-900 dark:text-surface-0 font-medium mr-2 mb-1 md:mb-0">Mat Black Case</span>
-                    <div class="mt-1 text-muted-color">Accessories</div>
-                </div>
-                <div class="mt-2 md:mt-0 ml-0 md:ml-20 flex items-center">
-                    <div class="bg-surface-300 dark:bg-surface-500 rounded-border overflow-hidden w-40 lg:w-24" style="height: 8px">
-                        <div class="bg-purple-500 h-full" style="width: 75%"></div>
-                    </div>
-                    <span class="text-purple-500 ml-4 font-medium">%75</span>
-                </div>
-            </li>
-            <li class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                <div>
-                    <span class="text-surface-900 dark:text-surface-0 font-medium mr-2 mb-1 md:mb-0">Robots T-Shirt</span>
-                    <div class="mt-1 text-muted-color">Clothing</div>
-                </div>
-                <div class="mt-2 md:mt-0 ml-0 md:ml-20 flex items-center">
-                    <div class="bg-surface-300 dark:bg-surface-500 rounded-border overflow-hidden w-40 lg:w-24" style="height: 8px">
-                        <div class="bg-teal-500 h-full" style="width: 40%"></div>
-                    </div>
-                    <span class="text-teal-500 ml-4 font-medium">%40</span>
-                </div>
-            </li>
-        </ul>
+  <div class="card h-full">
+    <div class="flex justify-between items-center mb-6">
+      <div class="font-semibold text-xl">Top Performers</div>
+      <div class="flex gap-1 p-1 bg-surface-100 dark:bg-surface-800 rounded-lg">
+        <Button
+          size="small"
+          :severity="activeTab === 'medicines' ? 'primary' : 'secondary'"
+          :text="activeTab !== 'medicines'"
+          label="Medicines"
+          icon="pi pi-box"
+          @click="activeTab = 'medicines'"
+        />
+        <Button
+          size="small"
+          :severity="activeTab === 'doctors' ? 'primary' : 'secondary'"
+          :text="activeTab !== 'doctors'"
+          label="Doctors"
+          icon="pi pi-user-md"
+          @click="activeTab = 'doctors'"
+        />
+      </div>
     </div>
+
+    <!-- Medicines List -->
+    <div v-if="activeTab === 'medicines'">
+      <div v-if="loading" class="py-8 flex justify-center">
+        <ProgressSpinner style="width: 40px; height: 40px" />
+      </div>
+      <div v-else-if="!topMedicines || topMedicines.length === 0" class="py-8 text-center text-muted-color">
+        <i class="pi pi-box text-3xl mb-2"></i>
+        <div>No prescriptions recorded yet</div>
+      </div>
+      <ul v-else class="list-none p-0 m-0">
+        <li
+          v-for="(med, idx) in topMedicines"
+          :key="med.id"
+          class="flex flex-col md:flex-row md:items-center md:justify-between mb-5 last:mb-0"
+        >
+          <div class="flex items-center gap-3">
+            <span class="w-6 text-center font-bold text-muted-color">#{{ idx + 1 }}</span>
+            <div>
+              <span class="text-surface-900 dark:text-surface-0 font-medium">{{ med.name }}</span>
+              <div class="text-xs text-muted-color">Unit: {{ med.unit }}</div>
+            </div>
+          </div>
+          <div class="mt-2 md:mt-0 flex items-center justify-end">
+            <div class="bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden w-28 md:w-32" style="height: 8px">
+              <div
+                :class="colors[idx % colors.length]"
+                class="h-full rounded-full transition-all duration-500"
+                :style="{ width: `${Math.round((Number(med.total_prescribed) / maxMedicineQuantity) * 100)}%` }"
+              ></div>
+            </div>
+            <span :class="textColors[idx % textColors.length]" class="ml-4 font-semibold min-w-12 text-right">
+              {{ med.total_prescribed }}
+            </span>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Doctors List -->
+    <div v-if="activeTab === 'doctors'">
+      <div v-if="loading" class="py-8 flex justify-center">
+        <ProgressSpinner style="width: 40px; height: 40px" />
+      </div>
+      <div v-else-if="!topDoctors || topDoctors.length === 0" class="py-8 text-center text-muted-color">
+        <i class="pi pi-user-md text-3xl mb-2"></i>
+        <div>No examinations completed this month</div>
+      </div>
+      <ul v-else class="list-none p-0 m-0">
+        <li
+          v-for="(doc, idx) in topDoctors"
+          :key="doc.id"
+          class="flex flex-col md:flex-row md:items-center md:justify-between mb-5 last:mb-0"
+        >
+          <div class="flex items-center gap-3">
+            <span class="w-6 text-center font-bold text-muted-color">#{{ idx + 1 }}</span>
+            <div>
+              <span class="text-surface-900 dark:text-surface-0 font-medium">{{ doc.doctor_name }}</span>
+              <div class="text-xs text-muted-color">Medical Doctor</div>
+            </div>
+          </div>
+          <div class="mt-2 md:mt-0 flex items-center justify-end">
+            <div class="bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden w-28 md:w-32" style="height: 8px">
+              <div
+                :class="colors[idx % colors.length]"
+                class="h-full rounded-full transition-all duration-500"
+                :style="{ width: `${Math.round((Number(doc.examination_count) / maxDoctorCount) * 100)}%` }"
+              ></div>
+            </div>
+            <span :class="textColors[idx % textColors.length]" class="ml-4 font-semibold min-w-12 text-right">
+              {{ doc.examination_count }} visits
+            </span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
 </template>
