@@ -28,6 +28,7 @@ const menu = computed<MenuGroup[]>(() => {
           label: 'Dashboard',
           icon: 'pi pi-fw pi-home',
           to: '/',
+          permission: 'STATS.SHOW',
         },
       ],
     },

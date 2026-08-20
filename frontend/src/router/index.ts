@@ -35,6 +35,9 @@ const router = createRouter({
           path: '',
           name: 'dashboard',
           component: () => import('@/views/Dashboard.vue'),
+          meta: {
+            permission: 'STATS.SHOW',
+          },
         },
 
         {
@@ -167,6 +170,20 @@ const router = createRouter({
   ],
 })
 
+function getFirstAccessibleRoute(auth: ReturnType<typeof useAuthStore>): string {
+  if (auth.can('STATS.SHOW')) return 'dashboard'
+  if (auth.can('PATIENTS.FINDALL')) return 'patients'
+  if (auth.can('APPOINTMENTS.FINDALL')) return 'appointments'
+  if (auth.can('EXAMINATIONS.FINDALL')) return 'examinations'
+  if (auth.can('PRESCRIPTIONS.FINDALL')) return 'prescriptions'
+  if (auth.can('MEDICINES.FINDALL')) return 'medicines'
+  if (auth.can('INVOICES.FINDALL')) return 'invoices'
+  if (auth.can('DOCTORS.FINDALL')) return 'doctors'
+  if (auth.can('SPECIALTIES.FINDALL')) return 'specialties'
+  if (auth.can('USERS.FINDALL')) return 'users'
+  return 'access'
+}
+
 router.beforeEach(async (to) => {
   const auth = useAuthStore()
 
@@ -183,7 +200,13 @@ router.beforeEach(async (to) => {
 
   if (to.meta.guestOnly && auth.isAuthenticated) {
     return {
-      name: 'dashboard',
+      name: getFirstAccessibleRoute(auth),
+    }
+  }
+
+  if (to.name === 'dashboard' && !auth.can('STATS.SHOW')) {
+    return {
+      name: getFirstAccessibleRoute(auth),
     }
   }
 
