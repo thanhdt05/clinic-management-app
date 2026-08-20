@@ -2,8 +2,11 @@
 
 namespace App\Services;
 
+use App\Constants\ActivityAction;
+use App\Events\ActivityLogged;
 use App\Models\Patient;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 
 class PatientService
 {
@@ -31,18 +34,53 @@ class PatientService
     {
         $data['code'] = $this->generateCode();
 
-        return Patient::create($data);
+        $patient = Patient::create($data);
+
+        ActivityLogged::dispatch(
+            ActivityAction::PATIENT_CREATED,
+            $patient,
+            Auth::user(),
+            [
+                'code' => $patient->code,
+                'full_name' => $patient->full_name,
+                'phone' => $patient->phone,
+            ]
+        );
+
+        return $patient;
     }
 
     public function update(Patient $patient, array $data): Patient
     {
         $patient->update($data);
 
-        return $patient->refresh();
+        $loadedPatient = $patient->refresh();
+
+        ActivityLogged::dispatch(
+            ActivityAction::PATIENT_UPDATED,
+            $loadedPatient,
+            Auth::user(),
+            [
+                'code' => $loadedPatient->code,
+                'updated_fields' => array_keys($data),
+            ]
+        );
+
+        return $loadedPatient;
     }
 
     public function delete(Patient $patient): void
     {
+        ActivityLogged::dispatch(
+            ActivityAction::PATIENT_DELETED,
+            $patient,
+            Auth::user(),
+            [
+                'code' => $patient->code,
+                'full_name' => $patient->full_name,
+            ]
+        );
+
         $patient->delete();
     }
 

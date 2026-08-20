@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Constants\ActivityAction;
 use App\Constants\Messages\ExaminationMessage;
+use App\Events\ActivityLogged;
 use App\Models\Appointment;
 use App\Models\Examination;
 use App\Models\User;
@@ -76,12 +78,21 @@ class ExaminationService
                 'status' => 'completed',
             ]);
 
-            return $examination->load(
+            $loadedExam = $examination->load(
                 'appointment',
                 'patient',
                 'doctor.user',
                 'doctor.specialty'
             );
+
+            ActivityLogged::dispatch(
+                ActivityAction::EXAMINATION_CREATED,
+                $loadedExam,
+                $user,
+                ['appointment_id' => $appointment->id, 'diagnosis' => $loadedExam->diagnosis]
+            );
+
+            return $loadedExam;
         });
     }
 
@@ -103,12 +114,21 @@ class ExaminationService
 
         $examination->update($data);
 
-        return $examination->refresh()->load([
+        $loadedExam = $examination->refresh()->load([
             'appointment',
             'patient',
             'doctor.user',
             'doctor.specialty',
         ]);
+
+        ActivityLogged::dispatch(
+            ActivityAction::EXAMINATION_UPDATED,
+            $loadedExam,
+            $user,
+            ['updated_fields' => array_keys($data)]
+        );
+
+        return $loadedExam;
     }
 
     private function checkDoctorCanAccessExamination(User $user, Examination $examination): void

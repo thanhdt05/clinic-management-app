@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Constants\ActivityAction;
 use App\Constants\Messages\PrescriptionMessage;
+use App\Events\ActivityLogged;
 use App\Models\Examination;
 use App\Models\Medicine;
 use App\Models\Prescription;
@@ -62,11 +64,20 @@ class PrescriptionService
             'notes' => $data['notes'] ?? null,
         ]);
 
-        return $prescription->load([
+        $loadedPrescription = $prescription->load([
             'examination.patient',
             'doctor.user',
             'items.medicine',
         ]);
+
+        ActivityLogged::dispatch(
+            ActivityAction::PRESCRIPTION_UPDATED,
+            $loadedPrescription,
+            $user,
+            ['notes' => $data['notes'] ?? null]
+        );
+
+        return $loadedPrescription;
     }
 
     public function store(User $user, array $data): Prescription
@@ -87,11 +98,23 @@ class PrescriptionService
                 $this->createItemAndUpdateStock($prescription, $item);
             }
 
-            return $prescription->load([
+            $loadedPrescription = $prescription->load([
                 'examination.patient',
                 'doctor.user',
                 'items.medicine',
             ]);
+
+            ActivityLogged::dispatch(
+                ActivityAction::PRESCRIPTION_CREATED,
+                $loadedPrescription,
+                $user,
+                [
+                    'examination_id' => $data['examination_id'],
+                    'items_count' => count($data['items'] ?? []),
+                ]
+            );
+
+            return $loadedPrescription;
         });
     }
 
@@ -102,11 +125,23 @@ class PrescriptionService
 
             $this->createItemAndUpdateStock($prescription, $data);
 
-            return $prescription->refresh()->load([
+            $loadedPrescription = $prescription->refresh()->load([
                 'examination.patient',
                 'doctor.user',
                 'items.medicine',
             ]);
+
+            ActivityLogged::dispatch(
+                ActivityAction::PRESCRIPTION_ITEM_ADDED,
+                $loadedPrescription,
+                $user,
+                [
+                    'medicine_id' => $data['medicine_id'],
+                    'quantity' => $data['quantity'],
+                ]
+            );
+
+            return $loadedPrescription;
         });
     }
 
@@ -147,11 +182,25 @@ class PrescriptionService
 
             $lockedItem->update($data);
 
-            return $prescription->refresh()->load([
+            $loadedPrescription = $prescription->refresh()->load([
                 'examination.patient',
                 'doctor.user',
                 'items.medicine',
             ]);
+
+            ActivityLogged::dispatch(
+                ActivityAction::PRESCRIPTION_ITEM_UPDATED,
+                $loadedPrescription,
+                $user,
+                [
+                    'item_id' => $lockedItem->id,
+                    'medicine_id' => $lockedItem->medicine_id,
+                    'old_quantity' => $oldQuantity,
+                    'new_quantity' => $newQuantity,
+                ]
+            );
+
+            return $loadedPrescription;
         });
     }
 
@@ -169,14 +218,31 @@ class PrescriptionService
                 ->lockForUpdate()
                 ->findOrFail($lockedItem->medicine_id);
 
+            $removedItemId = $lockedItem->id;
+            $removedMedicineId = $lockedItem->medicine_id;
+            $restoredQuantity = $lockedItem->quantity;
+
             $medicine->increment('stock', $lockedItem->quantity);
             $lockedItem->delete();
 
-            return $prescription->refresh()->load([
+            $loadedPrescription = $prescription->refresh()->load([
                 'examination.patient',
                 'doctor.user',
                 'items.medicine',
             ]);
+
+            ActivityLogged::dispatch(
+                ActivityAction::PRESCRIPTION_ITEM_REMOVED,
+                $loadedPrescription,
+                $user,
+                [
+                    'item_id' => $removedItemId,
+                    'medicine_id' => $removedMedicineId,
+                    'quantity_restored' => $restoredQuantity,
+                ]
+            );
+
+            return $loadedPrescription;
         });
     }
 

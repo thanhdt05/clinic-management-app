@@ -2,10 +2,13 @@
 
 namespace App\Services;
 
+use App\Constants\ActivityAction;
 use App\Constants\Messages\PaymentMessage;
+use App\Events\ActivityLogged;
 use App\Models\Invoice;
 use App\Models\Payment;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
@@ -23,8 +26,8 @@ class PaymentService
         return $invoice->payments()
             ->latest()
             ->paginate(
-            $data['per_page'] ?? self::PER_PAGE
-        );
+                $data['per_page'] ?? self::PER_PAGE
+            );
     }
 
     public function create(Invoice $invoice, array $data)
@@ -67,6 +70,13 @@ class PaymentService
             'note' => $data['note'] ?? null,
         ]);
 
+        ActivityLogged::dispatch(
+            ActivityAction::PAYMENT_CREATED,
+            $payment,
+            Auth::user(),
+            ['invoice_id' => $invoice->id, 'amount' => $payment->amount, 'method' => $payment->method]
+        );
+
         return [
             'payment' => $payment,
             'order_id' => $paypalOrder['order_id'],
@@ -86,6 +96,13 @@ class PaymentService
             $payment->update([
                 'status' => 'failed',
             ]);
+
+            ActivityLogged::dispatch(
+                ActivityAction::PAYMENT_FAILED,
+                $payment,
+                Auth::user(),
+                ['error' => $exception->getMessage()]
+            );
 
             throw ValidationException::withMessages([
                 'payment' => PaymentMessage::FAILED_TO_CAPTURE_PAYPAL_PAYMENT,
@@ -124,7 +141,16 @@ class PaymentService
                 ]);
             }
 
-            return $lockedPayment->refresh()->load('invoice');
+            $refreshed = $lockedPayment->refresh()->load('invoice');
+
+            ActivityLogged::dispatch(
+                ActivityAction::PAYMENT_COMPLETED,
+                $refreshed,
+                Auth::user(),
+                ['amount' => $refreshed->amount, 'capture_id' => $captureResult['capture_id']]
+            );
+
+            return $refreshed;
         });
     }
 
