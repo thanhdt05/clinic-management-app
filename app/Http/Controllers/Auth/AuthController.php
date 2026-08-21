@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Constants\Messages\AuthMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use App\Traits\HttpResponse;
@@ -17,12 +18,9 @@ class AuthController extends Controller
 {
     use HttpResponse;
 
-    public function login(Request $request): JsonResponse
+    public function login(LoginRequest $request): JsonResponse
     {
-        $validate = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ]);
+        $validate = $request->validated();
 
         $user = User::where('email', $validate['email'])->first();
 

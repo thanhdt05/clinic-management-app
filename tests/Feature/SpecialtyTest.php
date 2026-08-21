@@ -6,6 +6,8 @@ use Database\Seeders\RolePermissionSeeder;
 use Database\Seeders\RoleSeeder;
 
 use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\assertDatabaseMissing;
+use function Pest\Laravel\deleteJson;
 use function Pest\Laravel\getJson;
 use function Pest\Laravel\patchJson;
 use function Pest\Laravel\postJson;
@@ -79,4 +81,26 @@ it('admin can update specialty', function () {
     ])->assertOk();
 
     expect($specialty->fresh()->name)->toBe('Cardiology');
+});
+
+it('receptionist can view specialty detail', function () {
+    actingAsRole('RECEPTIONIST');
+
+    $specialty = Specialty::factory()->create(['name' => 'Dermatology']);
+
+    getJson("/api/specialties/{$specialty->id}")
+        ->assertOk()
+        ->assertJsonPath('data.id', $specialty->id)
+        ->assertJsonPath('data.name', 'Dermatology');
+});
+
+it('admin can delete specialty', function () {
+    actingAsRole('ADMIN');
+
+    $specialty = Specialty::factory()->create();
+
+    deleteJson("/api/specialties/{$specialty->id}")
+        ->assertOk();
+
+    assertDatabaseMissing('specialties', ['id' => $specialty->id]);
 });

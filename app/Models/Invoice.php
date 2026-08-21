@@ -21,7 +21,7 @@ class Invoice extends Model
         'issued_at',
     ];
 
-    protected function cast(): array
+    protected function casts(): array
     {
         return [
             'subtotal' => 'decimal:2',

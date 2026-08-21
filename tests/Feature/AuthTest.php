@@ -100,3 +100,12 @@ it('can get current user profile', function () {
             ],
         ]);
 });
+
+it('rejects login with invalid email or short password', function () {
+    postJson('/api/login', [
+        'email' => 'invalid-email-format',
+        'password' => '123',
+    ])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['email', 'password']);
+});
