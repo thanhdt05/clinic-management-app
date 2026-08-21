@@ -192,7 +192,7 @@ it('rejects booking appointment for same doctor with same time', function () {
         'doctor_id' => $doctor->id,
         'patient_id' => $patient->id,
         'status' => 'scheduled',
-        'scheduled_at' => $start,
+        'scheduled_at' => $start->format('Y-m-d H:i:s'),
     ]);
 
     $newPatient = Patient::factory()->create();
@@ -200,7 +200,7 @@ it('rejects booking appointment for same doctor with same time', function () {
     postJson('/api/appointments', [
         'doctor_id' => $doctor->id,
         'patient_id' => $newPatient->id,
-        'scheduled_at' => $start->copy()->addMinutes(10),
+        'scheduled_at' => $start->copy()->addMinutes(10)->format('Y-m-d H:i:s'),
     ])
         ->assertUnprocessable()
         ->assertJsonValidationErrors('scheduled_at');
@@ -219,7 +219,7 @@ it('create adjacent appointment after 30 minutes', function () {
         'doctor_id' => $doctor->id,
         'patient_id' => $patient->id,
         'status' => 'scheduled',
-        'scheduled_at' => $start,
+        'scheduled_at' => $start->format('Y-m-d H:i:s'),
     ]);
 
     $newPatient = Patient::factory()->create();
@@ -227,11 +227,11 @@ it('create adjacent appointment after 30 minutes', function () {
     postJson('/api/appointments', [
         'doctor_id' => $doctor->id,
         'patient_id' => $newPatient->id,
-        'scheduled_at' => $start->copy()->addMinutes(30),
+        'scheduled_at' => $start->copy()->addMinutes(30)->format('Y-m-d H:i:s'),
     ])->assertCreated();
 
     assertDatabaseHas('appointments', [
-        'scheduled_at' => $start->copy()->addMinutes(30),
+        'scheduled_at' => $start->copy()->addMinutes(30)->format('Y-m-d H:i:s'),
     ]);
 });
 
@@ -248,16 +248,16 @@ it('ignores cancelled appointment when checking conflict', function () {
         'doctor_id' => $doctor->id,
         'patient_id' => $patient->id,
         'status' => 'cancelled',
-        'scheduled_at' => $start,
+        'scheduled_at' => $start->format('Y-m-d H:i:s'),
     ]);
 
     postJson('/api/appointments', [
         'patient_id' => Patient::factory()->create()->id,
         'doctor_id' => $doctor->id,
-        'scheduled_at' => $start,
+        'scheduled_at' => $start->format('Y-m-d H:i:s'),
     ])->assertCreated();
 
     assertDatabaseHas('appointments', [
-        'scheduled_at' => $start,
+        'scheduled_at' => $start->format('Y-m-d H:i:s'),
     ]);
 });

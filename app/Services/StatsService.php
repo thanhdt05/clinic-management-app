@@ -14,7 +14,7 @@ class StatsService
 {
     private const int DEFAULT_LOW_STOCK_THRESHOLD = 10;
 
-     public function getAdminDashboardStats(): array
+    public function getAdminDashboardStats(): array
     {
         return [
             'overview' => $this->getOverviewKpis(),
@@ -71,7 +71,7 @@ class StatsService
             ->groupBy('month')
             ->orderBy('month')
             ->get()
-            ->map(fn($item) => [
+            ->map(fn ($item) => [
                 'month' => (string) $item->month,
                 'revenue' => (float) $item->revenue,
                 'discount' => (float) $item->discount,
